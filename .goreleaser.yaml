@@ -4,7 +4,7 @@ project_name: aidoku
 
 release:
   prerelease: auto
-  draft: true
+  draft: false
   name_template: "aidoku-cli {{.Version}}"
 
 before:
@@ -65,7 +65,7 @@ changelog:
   sort: asc
   use: github
   groups:
-    - title: "New Features"
+    - title: "New features"
       regexp: "^.*feat[(\\w)]*:+.*$"
       order: 0
     - title: "Bug fixes"
@@ -77,3 +77,5 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+      - '^chore:'
+      - '^ci:'
