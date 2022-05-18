@@ -1,31 +1,29 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
 	"github.com/beerpiss/aidoku-cli/internal/build"
-	"github.com/beerpiss/aidoku-cli/internal/logcat"
+	"github.com/beerpiss/aidoku-cli/internal/common"
 	"github.com/fatih/color"
+	"github.com/felixge/httpsnoop"
 	"github.com/spf13/cobra"
 )
 
-func logRequest(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("[%s] \"%s %s\" \"%s\"", time.Now().UTC().Format(time.RFC3339), r.Method, r.URL, r.UserAgent())
-		handler.ServeHTTP(w, r)
-	})
-}
+var (
+	cyan = color.New(color.FgCyan).SprintFunc()
+	red  = color.New(color.FgRed).SprintFunc()
+)
 
 var serveCmd = &cobra.Command{
 	Use:           "serve <FILES>",
 	Short:         "Build a source list and serve it on the local network",
+	Version:       rootCmd.Version,
 	Args:          cobra.MinimumNArgs(1),
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -37,38 +35,44 @@ var serveCmd = &cobra.Command{
 			os.Exit(0)
 		}()
 
+		address, _ := cmd.Flags().GetString("address")
 		output, _ := cmd.Flags().GetString("output")
 		port, _ := cmd.Flags().GetString("port")
 
-		os.RemoveAll(output)
-		var fileList []string
-		for _, arg := range args {
-			files, err := filepath.Glob(arg)
-			if err != nil {
-				color.Red("error: invalid glob pattern %s", arg)
-				continue
-			}
-			fileList = append(fileList, files...)
-		}
-		if len(fileList) == 0 {
-			return errors.New("no files given")
-		}
-		os.MkdirAll(output, os.FileMode(0644))
-		os.MkdirAll(output+"/icons", os.FileMode(0644))
-		os.MkdirAll(output+"/sources", os.FileMode(0644))
-		build.BuildSource(fileList, output)
+		build.BuildWrapper(args, output)
 
-		http.Handle("/", http.FileServer(http.Dir(output)))
 		fmt.Println("Listening on these addresses:")
-		logcat.PrintAddresses(port)
+		if address == "0.0.0.0" {
+			common.PrintAddresses(port)
+		} else {
+			color.Green("    http://%s:%s", address, port)
+		}
+		fmt.Println("Hit CTRL-C to stop the server")
 
-		http.ListenAndServe(":"+port, logRequest(http.DefaultServeMux))
+		handler := http.FileServer(http.Dir(output))
+		http.Handle("/", handler)
+		wrappedHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			timestamp := time.Now().UTC().Format(time.RFC3339)
+			method := r.Method
+			url := r.URL
+			userAgent := r.UserAgent()
+			fmt.Printf("[%s] \"%s %s\" \"%s\"\n", timestamp, cyan(method), cyan(url), userAgent)
+
+			m := httpsnoop.CaptureMetrics(handler, w, r)
+			timestamp = time.Now().UTC().Format(time.RFC3339)
+			statusCode := m.Code
+			if statusCode != http.StatusOK {
+				fmt.Printf("[%s] \"%s %s\" Error (%s): \"%s\"\n", timestamp, red(method), red(url), red(statusCode), red(http.StatusText(statusCode)))
+			}
+		})
+		http.ListenAndServe(address+":"+port, wrappedHandler)
 		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
+	serveCmd.Flags().StringP("address", "a", "0.0.0.0", "Address to broadcast source list")
 	serveCmd.Flags().StringP("port", "p", "8080", "The port to broadcast the source list on")
 	serveCmd.Flags().StringP("output", "o", "public", "The source list folder")
 
