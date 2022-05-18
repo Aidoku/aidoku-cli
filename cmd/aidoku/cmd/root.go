@@ -7,7 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Verbose bool
+var (
+	Verbose bool
+	Version string
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "aidoku",
