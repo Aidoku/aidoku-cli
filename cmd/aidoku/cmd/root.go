@@ -9,12 +9,13 @@ import (
 
 var (
 	Verbose bool
-	Version string
+	Version = "develop"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "aidoku",
-	Short: "Aidoku development toolkit",
+	Use:     "aidoku",
+	Short:   "Aidoku development toolkit",
+	Version: Version,
 }
 
 func Execute() {

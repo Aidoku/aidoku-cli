@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -27,7 +28,27 @@ type source struct {
 	NSFW    int    `json:"nsfw"`
 }
 
-func BuildSource(zipFiles []string, output string) {
+func BuildWrapper(zipPatterns []string, output string) error {
+	os.RemoveAll(output)
+	var fileList []string
+	for _, arg := range zipPatterns {
+		files, err := filepath.Glob(arg)
+		if err != nil {
+			color.Red("error: invalid glob pattern %s", arg)
+			continue
+		}
+		fileList = append(fileList, files...)
+	}
+	if len(fileList) == 0 {
+		return errors.New("no files given")
+	}
+	os.MkdirAll(output, os.FileMode(0644))
+	os.MkdirAll(output+"/icons", os.FileMode(0644))
+	os.MkdirAll(output+"/sources", os.FileMode(0644))
+	return BuildSource(fileList, output)
+}
+
+func BuildSource(zipFiles []string, output string) error {
 	var wg sync.WaitGroup
 	sourceList := struct {
 		sync.Mutex
@@ -69,8 +90,8 @@ func BuildSource(zipFiles []string, output string) {
 					sourceInfo.Name = string(info.GetStringBytes("name"))
 					sourceInfo.Version = info.GetInt("version")
 					sourceInfo.NSFW = info.GetInt("nsfw")
-					sourceInfo.File = sourceInfo.ID + "-v" + fmt.Sprint(sourceInfo.Version) + ".aix"
-					sourceInfo.Icon = sourceInfo.ID + "-v" + fmt.Sprint(sourceInfo.Version) + ".png"
+					sourceInfo.File = fmt.Sprintf("%s-v%d.aix", sourceInfo.ID, sourceInfo.Version)
+					sourceInfo.Icon = fmt.Sprintf("%s-v%d.png", sourceInfo.ID, sourceInfo.Version)
 
 					common.CopyFileContents(zipFile, output+"/sources/"+sourceInfo.File)
 					sourceList.Lock()
@@ -96,10 +117,11 @@ func BuildSource(zipFiles []string, output string) {
 			}
 
 			if !hasIcon {
-				color.Red("warning: %s doesn't have an icon, generating placeholder", zipFile)
+				color.Yellow("warning: %s doesn't have an icon, generating placeholder", zipFile)
 				img, err := os.Create(fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
 				if err != nil {
-					panic(err)
+					color.Red("error: Couldn't write icon file %s: %s", sourceInfo.Icon, err.Error())
+					return
 				}
 				transparent, _ := base64.StdEncoding.DecodeString("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==")
 				io.Copy(img, bytes.NewReader(transparent))
@@ -115,12 +137,12 @@ func BuildSource(zipFiles []string, output string) {
 	b, err := json.Marshal(sourceList.data)
 	if err != nil {
 		color.Red("Couldn't serialize source list: ", err.Error())
-		panic(err)
+		return err
 	}
 
 	fm, err := os.Create(output + "/index.min.json")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer fm.Close()
 	fm.Write(b)
@@ -129,14 +151,15 @@ func BuildSource(zipFiles []string, output string) {
 	b, err = json.MarshalIndent(sourceList.data, "", "  ")
 	if err != nil {
 		color.Red("Couldn't serialize source list: ", err.Error())
-		panic(err)
+		return err
 	}
 
 	f, err := os.Create(output + "/index.json")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer f.Close()
 	f.Write(b)
 	f.Sync()
+	return nil
 }
