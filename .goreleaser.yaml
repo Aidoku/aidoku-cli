@@ -47,6 +47,7 @@ brews:
     folder: Formula
     homepage: https://github.com/beerpiss/aidoku-cli
     description: Aidoku development toolkit
+    commit_msg_template: "{{.ProjectName}}: Update to version {{.Tag}}"
     license: 0BSD
     install: |
       bin.install "aidoku"
