@@ -36,13 +36,43 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-
 checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
+brews:
+  - tap:
+      owner: beerpiss
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/beerpiss/aidoku-cli
+    description: Aidoku development toolkit
+    license: 0BSD
+    install: |
+      bin.install "aidoku"
+    test: |
+      system "#{bin}/aidoku version"  
+scoop:
+  bucket:
+    owner: beerpiss
+    name: scoop-bucket
+  folder: bucket
+  commit_msg_template: "{{.ProjectName}}: Update to version {{.Tag}}"
+  homepage: https://github.com/beerpiss/aidoku-cli
+  license: 0BSD
+
 changelog:
   sort: asc
+  use: github
+  groups:
+    - title: "New Features"
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: "Bug fixes"
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 10
+    - title: Other work
+      order: 999
   filters:
     exclude:
       - '^docs:'
