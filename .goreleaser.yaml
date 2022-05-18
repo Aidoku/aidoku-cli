@@ -1,5 +1,12 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
+project_name: aidoku
+
+release:
+  prerelease: auto
+  draft: true
+  name_template: "aidoku-cli {{.Version}}"
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -20,12 +27,26 @@ builds:
       - -trimpath
     ldflags: -X github.com/beerpiss/aidoku-cli/cmd/aidoku/cmd.Version={{.Version}}
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
+  - id: nix
+    builds:
+      - macos
+      - linux
+    wrap_in_directory: 'true'
+    replacements:
+      darwin: macos
       386: i386
       amd64: x86_64
+    format: tar.gz
+    files:
+      - LICENSE
+  - id: windows
+    builds:
+      - windows
+    wrap_in_directory: 'false'
+    format: zip
+    files:
+      - LICENSE
+
 checksum:
   name_template: 'checksums.txt'
 snapshot:
