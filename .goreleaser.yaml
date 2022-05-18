@@ -43,6 +43,9 @@ archives:
     builds:
       - windows
     wrap_in_directory: 'false'
+    replacements:
+      386: i386
+      amd64: x86_64
     format: zip
     files:
       - LICENSE
