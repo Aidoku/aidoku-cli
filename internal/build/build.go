@@ -19,7 +19,7 @@ import (
 )
 
 type source struct {
-	ID      string `json:"id"`
+	Id      string `json:"id"`
 	Name    string `json:"name"`
 	File    string `json:"file"`
 	Icon    string `json:"icon"`
@@ -54,6 +54,11 @@ func BuildSource(zipFiles []string, output string) error {
 		sync.Mutex
 		data []source
 	}{}
+	sourceIds := struct {
+		sync.Mutex
+		data map[string]string
+	}{}
+	sourceIds.data = make(map[string]string)
 	for _, file := range zipFiles {
 		wg.Add(1)
 		go func(zipFile string) {
@@ -73,6 +78,7 @@ func BuildSource(zipFiles []string, output string) error {
 					rc, err := f.Open()
 					if err != nil {
 						color.Red("error: couldn't read source info for %s", zipFile)
+						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
 						return
 					}
 					buf := new(strings.Builder)
@@ -81,17 +87,27 @@ func BuildSource(zipFiles []string, output string) error {
 					raw, err := parser.Parse(buf.String())
 					if err != nil {
 						color.Red("error: source.json is malformed for %s", zipFile)
+						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
 						return
 					}
 
 					info := raw.Get("info")
-					sourceInfo.ID = string(info.GetStringBytes("id"))
+					sourceInfo.Id = string(info.GetStringBytes("id"))
+					if val, ok := sourceIds.data[sourceInfo.Id]; ok {
+						color.Red("error: duplicate source identifier %s in %s, first found in %s", sourceInfo.Id, zipFile, val)
+						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
+						return
+					}
+					sourceIds.Lock()
+					sourceIds.data[sourceInfo.Id] = zipFile
+					sourceIds.Unlock()
+
 					sourceInfo.Lang = string(info.GetStringBytes("lang"))
 					sourceInfo.Name = string(info.GetStringBytes("name"))
 					sourceInfo.Version = info.GetInt("version")
 					sourceInfo.NSFW = info.GetInt("nsfw")
-					sourceInfo.File = fmt.Sprintf("%s-v%d.aix", sourceInfo.ID, sourceInfo.Version)
-					sourceInfo.Icon = fmt.Sprintf("%s-v%d.png", sourceInfo.ID, sourceInfo.Version)
+					sourceInfo.File = fmt.Sprintf("%s-v%d.aix", sourceInfo.Id, sourceInfo.Version)
+					sourceInfo.Icon = fmt.Sprintf("%s-v%d.png", sourceInfo.Id, sourceInfo.Version)
 
 					common.CopyFileContents(zipFile, output+"/sources/"+sourceInfo.File)
 					sourceList.Lock()
@@ -136,7 +152,7 @@ func BuildSource(zipFiles []string, output string) error {
 	wg.Wait()
 	b, err := json.Marshal(sourceList.data)
 	if err != nil {
-		color.Red("Couldn't serialize source list: ", err.Error())
+		color.Red("fatal: couldn't serialize source list: ", err.Error())
 		return err
 	}
 
@@ -150,7 +166,7 @@ func BuildSource(zipFiles []string, output string) error {
 
 	b, err = json.MarshalIndent(sourceList.data, "", "  ")
 	if err != nil {
-		color.Red("Couldn't serialize source list: ", err.Error())
+		color.Red("fatal: ouldn't serialize source list: ", err.Error())
 		return err
 	}
 
