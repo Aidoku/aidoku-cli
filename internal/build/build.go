@@ -97,7 +97,7 @@ func BuildSource(zipFiles []string, output string) {
 
 			if !hasIcon {
 				color.Red("warning: %s doesn't have an icon, generating placeholder", zipFile)
-				img, err := os.Create(fmt.Sprintf("%s/icons/%s.png", output, sourceInfo.Icon))
+				img, err := os.Create(fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
 				if err != nil {
 					panic(err)
 				}
