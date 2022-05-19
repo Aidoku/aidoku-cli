@@ -137,7 +137,7 @@ func sourceTs() []byte {
 } from "aidoku-as/src/index";
 
 
-export class HentaiVN extends Source {
+export class {{ .Name }} extends Source {
 	constructor() {
 		super();
 		// TODO
