@@ -98,3 +98,18 @@ Flags:
 Global Flags:
   -v, --verbose   verbose output
 ```
+
+## `aidoku completion <SHELL>`
+```
+Generate completion script
+
+Usage:
+  aidoku completion [bash|zsh|fish|powershell]
+
+Flags:
+  -h, --help      help for completion
+      --version   version for completion
+
+Global Flags:
+  -v, --verbose   verbose output
+```
