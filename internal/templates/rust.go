@@ -114,7 +114,7 @@ fn modify_image_request(_: Request) {
 }
 
 #[handle_url]
-fn handle_url(_: String): Result<DeepLink> {
+fn handle_url(_: String) -> Result<DeepLink> {
 	todo!()
 }
 `)
