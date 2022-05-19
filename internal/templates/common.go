@@ -74,7 +74,7 @@ func commonFilterJson() []byte {
 	},
 	{
 		"type": "author"
-	}
+	},
 	{
 		"type": "group",
 		"name": "A group filter",
