@@ -174,7 +174,7 @@ func GenerateCommon(output string, source Source) error {
 
 	files := map[string]func() []byte{
 		"/res/source.json":   commonSourceJson,
-		"/res/filter.json":   commonFilterJson,
+		"/res/filters.json":  commonFilterJson,
 		"/res/settings.json": commonSettingsJson,
 	}
 	return GenerateFilesFromMap(output, source, files)
