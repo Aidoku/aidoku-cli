@@ -1,6 +1,6 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
-project_name: aidoku
+project_name: aidoku-cli
 
 release:
   prerelease: auto
@@ -52,7 +52,7 @@ brews:
     install: |
       bin.install "aidoku"
     test: |
-      system "#{bin}/aidoku version"  
+      system "#{bin}/aidoku version"
 
 changelog:
   sort: asc
