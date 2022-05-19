@@ -53,14 +53,6 @@ brews:
       bin.install "aidoku"
     test: |
       system "#{bin}/aidoku version"  
-scoop:
-  bucket:
-    owner: beerpiss
-    name: scoop-bucket
-  folder: bucket
-  commit_msg_template: "{{.ProjectName}}: Update to version {{.Tag}}"
-  homepage: https://github.com/beerpiss/aidoku-cli
-  license: 0BSD
 
 changelog:
   sort: asc
