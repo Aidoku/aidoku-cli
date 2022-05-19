@@ -95,12 +95,18 @@ var initCommand = &cobra.Command{
 			checkPrompt(survey.AskOne(prompt, &selection, survey.WithValidator(survey.Required)))
 			nsfw = selection
 		}
+
 		source := templates.Source{
 			Name:     name,
 			Homepage: homepage,
 			Language: lang,
 			Nsfw:     nsfw,
 		}
+		// Determine if it's a child of a template by checking for a parent package at $output
+		if _, err := os.Stat(args[1] + "/../../Cargo.lock"); err == nil {
+			source.ChildTemplate = true
+		}
+
 		var err error
 		switch args[0] {
 		case "rust":

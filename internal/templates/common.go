@@ -13,6 +13,7 @@ import (
 type Source struct {
 	Language, Name, Homepage string
 	Nsfw                     int
+	ChildTemplate            bool
 }
 
 func commonSourceJson() []byte {

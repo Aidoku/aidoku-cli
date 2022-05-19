@@ -53,7 +53,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
-
+{{ if not .ChildTemplate }}
 [profile.dev]
 panic = "abort"
 
@@ -62,9 +62,11 @@ panic = "abort"
 opt-level = "s"
 strip = true
 lto = true
-
+{{ end }}
 [dependencies]
-aidoku = { git = "https://github.com/Aidoku/aidoku-rs" }
+aidoku = { git = "https://github.com/Aidoku/aidoku-rs" }{{ if .ChildTemplate }}
+template = { path = "../../template" }
+{{ end }}
 `)
 }
 
@@ -125,14 +127,16 @@ func RustGenerator(output string, source Source) error {
 	if err != nil {
 		return err
 	}
-	os.MkdirAll(output+"/.cargo", os.FileMode(0754))
 
 	files := map[string]func() []byte{
-		"/src/lib.rs":    rustLibTemplate,
-		"/Cargo.toml":    rustCargoTemplate,
-		"/.cargo/config": rustCargoConfigTemplate,
-		"/build.sh":      rustPOSIXBuildScript,
-		"/build.ps1":     rustPS1BuildScript,
+		"/src/lib.rs": rustLibTemplate,
+		"/Cargo.toml": rustCargoTemplate,
+	}
+	if !source.ChildTemplate {
+		os.MkdirAll(output+"/.cargo", os.FileMode(0754))
+		files["/.cargo/config"] = rustCargoConfigTemplate
+		files["/build.sh"] = rustPOSIXBuildScript
+		files["/build.ps1"] = rustPS1BuildScript
 	}
 	return GenerateFilesFromMap(output, source, files)
 }
