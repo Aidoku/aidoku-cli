@@ -1,6 +1,17 @@
 # aidoku-cli
 Aidoku development tools in a single program
 
+# Installation
+```sh
+# macOS/Linux
+brew install beerpiss/tap/aidoku
+
+# Windows
+scoop bucket add beerpiss https://github.com/beerpiss/scoop-bucket
+scoop install beerpiss/aidoku
+```
+or download them from [Releases](https://github.com/beerpiss/aidoku-cli/releases)
+
 # Usage
 ```sh
 Aidoku development toolkit
