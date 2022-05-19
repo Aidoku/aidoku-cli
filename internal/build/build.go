@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/beerpiss/aidoku-cli/internal/common"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
 	"github.com/valyala/fastjson"
 )
@@ -30,12 +31,16 @@ func BuildWrapper(zipPatterns []string, output string) error {
 	os.RemoveAll(output)
 	var fileList []string
 	for _, arg := range zipPatterns {
-		files, err := filepath.Glob(arg)
+		base, pattern := doublestar.SplitPattern(filepath.ToSlash(arg))
+		fsys := os.DirFS(base)
+		files, err := doublestar.Glob(fsys, pattern)
 		if err != nil {
 			color.Red("error: invalid glob pattern %s", arg)
 			continue
 		}
-		fileList = append(fileList, files...)
+		for _, file := range files {
+			fileList = append(fileList, base+"/"+file)
+		}
 	}
 	if len(fileList) == 0 {
 		return errors.New("no files given")
