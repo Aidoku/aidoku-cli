@@ -23,6 +23,25 @@ Use "aidoku [command] --help" for more information about a command.
 ```
 
 # Commands
+## `aidoku init [rust-template|rust|as|c] [DIR]`
+```sh
+Create initial code for an Aidoku source
+
+Usage:
+  aidoku init [rust-template|rust|as|c] [DIR] [flags]
+
+Flags:
+  -h, --help              help for init
+  -p, --homepage string   Source homepage
+  -l, --language string   Source language
+  -n, --name string       Source name
+      --nsfw int          Source NSFW level (default -1)
+      --version           version for init
+
+Global Flags:
+  -v, --verbose   verbose output
+```
+
 ## `aidoku build <FILES>`
 ```sh
 Build a source list from packages
