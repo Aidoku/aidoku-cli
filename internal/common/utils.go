@@ -1,6 +1,8 @@
 package common
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net"
@@ -75,4 +77,17 @@ func PrintAddresses(port string) {
 		}
 	}
 	color.Green("    http://127.0.0.1:%s\n", port)
+}
+
+func GeneratePng(location string) error {
+	img, err := os.Create(location)
+	if err != nil {
+		color.Red("error: Couldn't write icon file %s: %s", location, err.Error())
+		return err
+	}
+	transparent, _ := base64.StdEncoding.DecodeString("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==")
+	io.Copy(img, bytes.NewReader(transparent))
+	img.Sync()
+	img.Close()
+	return nil
 }

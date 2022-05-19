@@ -2,8 +2,6 @@ package build
 
 import (
 	"archive/zip"
-	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -134,15 +132,10 @@ func BuildSource(zipFiles []string, output string) error {
 
 			if !hasIcon {
 				color.Yellow("warning: %s doesn't have an icon, generating placeholder", zipFile)
-				img, err := os.Create(fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
+				err = common.GeneratePng(fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
 				if err != nil {
-					color.Red("error: Couldn't write icon file %s: %s", sourceInfo.Icon, err.Error())
 					return
 				}
-				transparent, _ := base64.StdEncoding.DecodeString("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==")
-				io.Copy(img, bytes.NewReader(transparent))
-				img.Sync()
-				img.Close()
 
 			} else {
 				os.Rename(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)), fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
@@ -152,7 +145,7 @@ func BuildSource(zipFiles []string, output string) error {
 	wg.Wait()
 	b, err := json.Marshal(sourceList.data)
 	if err != nil {
-		color.Red("fatal: couldn't serialize source list: ", err.Error())
+		color.Red("fatal: couldn't serialize source list: %s", err.Error())
 		return err
 	}
 
@@ -166,7 +159,7 @@ func BuildSource(zipFiles []string, output string) error {
 
 	b, err = json.MarshalIndent(sourceList.data, "", "  ")
 	if err != nil {
-		color.Red("fatal: ouldn't serialize source list: ", err.Error())
+		color.Red("fatal: ouldn't serialize source list: %s", err.Error())
 		return err
 	}
 
