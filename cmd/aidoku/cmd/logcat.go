@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/beerpiss/aidoku-cli/internal/common"
-	"github.com/beerpiss/aidoku-cli/internal/logcat"
+	"github.com/Aidoku/aidoku-cli/internal/common"
+	"github.com/Aidoku/aidoku-cli/internal/logcat"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/beerpiss/aidoku-cli/internal/common"
+	"github.com/Aidoku/aidoku-cli/internal/common"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
 	"github.com/segmentio/fasthash/fnv1a"

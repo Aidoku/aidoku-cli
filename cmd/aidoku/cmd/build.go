@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/beerpiss/aidoku-cli/internal/build"
+	"github.com/Aidoku/aidoku-cli/internal/build"
 	"github.com/spf13/cobra"
 )
 

@@ -8,9 +8,9 @@ import (
 
 	"golang.org/x/text/language"
 
+	"github.com/Aidoku/aidoku-cli/internal/templates"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/beerpiss/aidoku-cli/internal/templates"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )

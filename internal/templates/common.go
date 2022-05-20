@@ -6,7 +6,7 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/beerpiss/aidoku-cli/internal/common"
+	"github.com/Aidoku/aidoku-cli/internal/common"
 	"github.com/fatih/color"
 )
 

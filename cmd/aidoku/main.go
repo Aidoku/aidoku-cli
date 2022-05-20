@@ -1,6 +1,6 @@
 package main
 
-import "github.com/beerpiss/aidoku-cli/cmd/aidoku/cmd"
+import "github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd"
 
 func main() {
 	cmd.Execute()

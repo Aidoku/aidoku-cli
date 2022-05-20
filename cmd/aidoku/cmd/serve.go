@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/beerpiss/aidoku-cli/internal/build"
-	"github.com/beerpiss/aidoku-cli/internal/common"
+	"github.com/Aidoku/aidoku-cli/internal/build"
+	"github.com/Aidoku/aidoku-cli/internal/common"
 	"github.com/fatih/color"
 	"github.com/felixge/httpsnoop"
 	"github.com/spf13/cobra"

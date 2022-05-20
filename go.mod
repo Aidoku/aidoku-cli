@@ -1,4 +1,4 @@
-module github.com/beerpiss/aidoku-cli
+module github.com/Aidoku/aidoku-cli
 
 go 1.18
 
