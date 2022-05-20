@@ -2,7 +2,6 @@ package build
 
 import (
 	"archive/zip"
-	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,6 +14,7 @@ import (
 	"github.com/beerpiss/aidoku-cli/internal/common"
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
+	"github.com/segmentio/fasthash/fnv1a"
 	"github.com/valyala/fastjson"
 )
 
@@ -81,7 +81,7 @@ func BuildSource(zipFiles []string, output string) error {
 			var sourceInfo source
 			var parser fastjson.Parser
 			hasIcon := false
-			zipFileHash := fmt.Sprintf("%x", sha256.Sum256([]byte(zipFile)))
+			zipFileHash := fmt.Sprintf("%x", fnv1a.HashString64(zipFile))
 			for _, f := range r.File {
 				if f.Name == "Payload/source.json" {
 					rc, err := f.Open()
