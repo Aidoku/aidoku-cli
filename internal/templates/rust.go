@@ -53,7 +53,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
-{{ if not .ChildTemplate }}
+{{ if eq (len .TemplateName) 0 }}
 [profile.dev]
 panic = "abort"
 
@@ -64,8 +64,8 @@ strip = true
 lto = true
 {{ end }}
 [dependencies]
-aidoku = { git = "https://github.com/Aidoku/aidoku-rs" }{{ if .ChildTemplate }}
-template = { path = "../../template" }
+aidoku = { git = "https://github.com/Aidoku/aidoku-rs" }{{ if not (eq (len .TemplateName) 0) }}
+{{ .TemplateName }} = { path = "../../template" }
 {{ end }}
 `)
 }
@@ -132,7 +132,7 @@ func RustGenerator(output string, source Source) error {
 		"/src/lib.rs": rustLibTemplate,
 		"/Cargo.toml": rustCargoTemplate,
 	}
-	if !source.ChildTemplate {
+	if len(source.TemplateName) > 0 {
 		os.MkdirAll(output+"/.cargo", os.FileMode(0754))
 		files["/.cargo/config"] = rustCargoConfigTemplate
 		files["/build.sh"] = rustPOSIXBuildScript

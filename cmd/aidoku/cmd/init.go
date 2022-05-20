@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bufio"
 	"net/url"
 	"os"
+	"strings"
 
 	"golang.org/x/text/language"
 
@@ -102,15 +104,25 @@ var initCommand = &cobra.Command{
 			Language: lang,
 			Nsfw:     nsfw,
 		}
-		// Determine if it's a child of a template by checking for a parent package at $output
-		if _, err := os.Stat(args[1] + "/../../Cargo.lock"); err == nil {
-			source.ChildTemplate = true
-		}
 
 		var err error
 		switch args[0] {
 		case "rust":
-			err = templates.RustGenerator(args[1], source)
+			{
+				// Determine if it's a child of a template by checking for a parent package at $output
+				if file, err := os.Open(args[1] + "/../../template/Cargo.toml"); err == nil {
+					defer file.Close()
+					scanner := bufio.NewScanner(file)
+					for scanner.Scan() {
+						line := scanner.Text()
+						if strings.Contains(line, "name = \"") {
+							source.TemplateName = strings.TrimSuffix(strings.TrimPrefix(line, "name = \""), "\"")
+							break
+						}
+					}
+				}
+				err = templates.RustGenerator(args[1], source)
+			}
 		case "as":
 			err = templates.AscGenerator(args[1], source)
 		case "c":
