@@ -26,6 +26,7 @@ builds:
     flags:
       - -trimpath
     ldflags: | 
+      -s -w
       -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.version={{.Version}} 
       -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.commit={{.FullCommit}}
       -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.date={{.Date}}
