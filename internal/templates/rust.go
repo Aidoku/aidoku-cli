@@ -239,15 +239,15 @@ func RustGenerator(output string, source Source) error {
 	}
 
 	files := map[string]func() []byte{
-		"/src/lib.rs":    rustLibTemplate,
-		"/src/helper.rs": rustHelpers,
-		"/Cargo.toml":    rustCargoTemplate,
+		"/src/lib.rs": rustLibTemplate,
+		"/Cargo.toml": rustCargoTemplate,
 	}
-	if len(source.TemplateName) > 0 {
+	if len(source.TemplateName) == 0 {
 		os.MkdirAll(output+"/.cargo", os.FileMode(0754))
 		files["/.cargo/config"] = rustCargoConfigTemplate
 		files["/build.sh"] = rustPOSIXBuildScript
 		files["/build.ps1"] = rustPS1BuildScript
+		files["/src/helper.rs"] = rustHelpers
 	}
 	return GenerateFilesFromMap(output, source, files)
 }
