@@ -54,8 +54,11 @@ brews:
     license: 0BSD
     install: |
       bin.install "aidoku"
+      (bash_completion/"aidoku").write `#{bin}/aidoku completion bash`
+      (zsh_completion/"_aidoku").write `#{bin}/aidoku completion zsh`
+      (fish_completion/"aidoku.fish").write `#{bin}/aidoku completion fish`
     test: |
-      system "#{bin}/aidoku version"
+      system "#{bin}/aidoku --version"
 
 changelog:
   sort: asc
@@ -75,6 +78,10 @@ changelog:
       - '^test:'
       - '^chore:'
       - '^ci:'
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
+      - go mod tidy
   
 nfpms:
   - license: 0BSD
@@ -85,6 +92,7 @@ nfpms:
     formats:
     - deb
     - rpm
+    - apk
     contents:
     - src: completions/_bash
       dst: /usr/share/bash-completion/completions/aidoku
