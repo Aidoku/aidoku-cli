@@ -46,7 +46,11 @@ func BuildWrapper(zipPatterns []string, output string) error {
 	if len(fileList) == 0 {
 		return errors.New("no files given")
 	}
-	os.MkdirAll(output, os.FileMode(0644))
+	err := os.MkdirAll(output, os.FileMode(0644))
+	if err != nil {
+		color.Red("fatal: could not create output folder")
+		return err
+	}
 	os.MkdirAll(output+"/icons", os.FileMode(0644))
 	os.MkdirAll(output+"/sources", os.FileMode(0644))
 	return BuildSource(fileList, output)
