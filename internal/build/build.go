@@ -2,6 +2,7 @@ package build
 
 import (
 	"archive/zip"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -76,12 +77,13 @@ func BuildSource(zipFiles []string, output string) error {
 			var sourceInfo source
 			var parser fastjson.Parser
 			hasIcon := false
+			zipFileHash := fmt.Sprintf("%x", sha256.Sum256([]byte(zipFile)))
 			for _, f := range r.File {
 				if f.Name == "Payload/source.json" {
 					rc, err := f.Open()
 					if err != nil {
 						color.Red("error: couldn't read source info for %s: %s", zipFile, err)
-						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
+						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
 						return
 					}
 					buf := new(strings.Builder)
@@ -90,7 +92,7 @@ func BuildSource(zipFiles []string, output string) error {
 					raw, err := parser.Parse(buf.String())
 					if err != nil {
 						color.Red("error: source.json is malformed for %s: %s", zipFile, err)
-						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
+						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
 						return
 					}
 
@@ -98,7 +100,7 @@ func BuildSource(zipFiles []string, output string) error {
 					sourceInfo.Id = string(info.GetStringBytes("id"))
 					if val, ok := sourceIds.data[sourceInfo.Id]; ok {
 						color.Red("error: duplicate source identifier %s in %s, first found in %s", sourceInfo.Id, zipFile, val)
-						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
+						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
 						return
 					}
 					sourceIds.Lock()
@@ -123,9 +125,9 @@ func BuildSource(zipFiles []string, output string) error {
 						color.Red("error: couldn't read icon for %s", zipFile)
 						return
 					}
-					img, err := os.Create(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
+					img, err := os.Create(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
 					if err != nil {
-						color.Red("error: Couldn't create temporary icon file %s/icons/%s.png: %s", output, filepath.Base(zipFile), err)
+						color.Red("error: Couldn't create temporary icon file %s/icons/%s.png: %s", output, zipFileHash, err)
 						hasIcon = false
 						return
 					}
@@ -143,7 +145,7 @@ func BuildSource(zipFiles []string, output string) error {
 				}
 
 			} else {
-				os.Rename(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)), fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
+				os.Rename(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash), fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
 			}
 		}(file)
 	}
