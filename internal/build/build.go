@@ -80,7 +80,7 @@ func BuildSource(zipFiles []string, output string) error {
 				if f.Name == "Payload/source.json" {
 					rc, err := f.Open()
 					if err != nil {
-						color.Red("error: couldn't read source info for %s", zipFile)
+						color.Red("error: couldn't read source info for %s: %s", zipFile, err)
 						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
 						return
 					}
@@ -89,7 +89,7 @@ func BuildSource(zipFiles []string, output string) error {
 
 					raw, err := parser.Parse(buf.String())
 					if err != nil {
-						color.Red("error: source.json is malformed for %s", zipFile)
+						color.Red("error: source.json is malformed for %s: %s", zipFile, err)
 						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
 						return
 					}
@@ -125,7 +125,7 @@ func BuildSource(zipFiles []string, output string) error {
 					}
 					img, err := os.Create(fmt.Sprintf("%s/icons/%s.png", output, filepath.Base(zipFile)))
 					if err != nil {
-						color.Red("error: Couldn't create temporary icon file %s/icons/%s.png", output, filepath.Base(zipFile))
+						color.Red("error: Couldn't create temporary icon file %s/icons/%s.png: %s", output, filepath.Base(zipFile), err)
 						hasIcon = false
 						return
 					}
