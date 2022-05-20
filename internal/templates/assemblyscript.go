@@ -6,13 +6,13 @@ func asConfigJson() []byte {
 	return []byte(`{
 	"targets": {
 		"debug": {
-			"binaryFile": "build/untouched.wasm",
+			"outFile": "build/untouched.wasm",
 			"textFile": "build/untouched.wat",
 			"sourceMap": true,
 			"debug": true
 		},
 		"release": {
-			"binaryFile": "build/optimized.wasm",
+			"outFile": "build/optimized.wasm",
 			"textFile": "build/optimized.wat",
 			"sourceMap": true,
 			"optimizeLevel": 3,
@@ -31,17 +31,69 @@ func packageJson() []byte {
 	"name": "{{ .Name | ToLower }}",
 	"version": "0.1.0",
 	"ascMain": "src/index.ts",
+	"scripts": {
+		"clean": "wireit",
+		"build": "wireit",
+		"asbuild:debug": "wireit",
+		"asbuild:release": "wireit",
+		"asbuild": "wireit"
+	},
+	"wireit": {
+		"clean": {
+		  	"command": "shx rm -rf build/"
+		},
+		"build": {
+		  	"dependencies": [
+				"asbuild:release"
+		  	],
+		  	"files": [
+				"build/optimized.wasm",
+				"res/*"
+		  	],
+			"output": [
+				"build/package.aix"
+			],
+			"command": "shx mkdir -p build/Payload && shx cp build/optimized.wasm build/Payload/main.wasm && shx cp res/* build/Payload/ && cd build/ && zip -r package.aix Payload && cd .."
+		},
+		"asbuild:debug": {
+			"command": "asc src/index.ts --target debug",
+			"files": [
+				"asconfig.json",
+				"tsconfig.json",
+				"src/**/*"
+			],
+			"output": [
+				"build/untouched.wasm",
+				"build/untouched.wat"
+			]
+		},
+		"asbuild:release": {
+			"command": "asc src/index.ts --target release",
+			"files": [
+				"asconfig.json",
+				"tsconfig.json",
+				"src/**/*"
+			],
+			"output": [
+				"build/optimized.wasm",
+				"build/optimized.wat"
+			]
+		},
+		"asbuild": {
+			"dependencies": [
+				"asbuild:debug",
+				"asbuild:release"
+			]
+		}
+	},
+	"keywords": [],
 	"dependencies": {
 		"aidoku-as": "github:Aidoku/aidoku-as"
 	},
 	"devDependencies": {
-		"assemblyscript": "^0.19.23"
-	},
-	"scripts": {
-		"build": "rm -rf build/package.aix build/Payload\nnpm run asbuild:optimized\nmkdir -p build/Payload\ncp build/optimized.wasm build/Payload/main.wasm\ncp res/* build/Payload/\ncd build/ ; zip -r package.aix Payload",
-		"asbuild:untouched": "asc src/index.ts --target debug",
-		"asbuild:optimized": "asc src/index.ts --target release",
-		"asbuild": "npm run asbuild:untouched && npm run asbuild:optimized"
+		"assemblyscript": "^0.20.6",
+		"shx": "^0.3.4",
+		"wireit": "^0.3.1"
 	}
 }
 `)
@@ -65,7 +117,7 @@ func indexTs() []byte {
 	Request,
 	ValueRef,
 	DeepLink,
-} from "aidoku-as/src/index";
+} from "aidoku-as/src";
 
 import { {{ .Name }} as Source } from "./{{ .Name }}";
 
@@ -134,7 +186,7 @@ func sourceTs() []byte {
 	Page,
 	Request,
 	Source,
-} from "aidoku-as/src/index";
+} from "aidoku-as/src";
 
 
 export class {{ .Name }} extends Source {
