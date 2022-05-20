@@ -24,10 +24,11 @@ func commonSourceJson() []byte {
 		"version": 1,
 		"url": "{{ .Homepage }}",
 		"nsfw": {{ .Nsfw }}
-	},
+	},{{ if eq .Language "multi" }}
 	"languages": [
 
 	],
+	{{ end }}
 	"listings": [
 
 	]
