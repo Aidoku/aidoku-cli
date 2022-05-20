@@ -9,13 +9,16 @@ import (
 
 var (
 	Verbose bool
-	Version = "develop"
+
+	version = "develop"
+	commit  string
+	date    string
+	builtBy string
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "aidoku",
-	Short:   "Aidoku development toolkit",
-	Version: Version,
+	Use:   "aidoku",
+	Short: "Aidoku development toolkit",
 }
 
 func Execute() {
@@ -28,4 +31,10 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
+
+	formattedVersion := FormatVersion(version, commit, date, builtBy)
+	rootCmd.SetVersionTemplate(formattedVersion)
+	rootCmd.Version = formattedVersion
+
+	rootCmd.AddCommand(NewVersionCmd(version, commit, date, builtBy))
 }

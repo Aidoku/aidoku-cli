@@ -25,7 +25,11 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     flags:
       - -trimpath
-    ldflags: -X github.com/beerpiss/aidoku-cli/cmd/aidoku/cmd.Version={{.Version}}
+    ldflags: | 
+      -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.version={{.Version}} 
+      -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.commit={{.FullCommit}}
+      -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.date={{.Date}}
+      -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.builtBy=goreleaser
 archives:
   - replacements:
       darwin: macos
