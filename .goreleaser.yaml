@@ -5,14 +5,12 @@ project_name: aidoku-cli
 release:
   prerelease: auto
   draft: false
-  name_template: "aidoku-cli {{.Version}}"
+  name_template: "aidoku-cli v{{.Version}}"
 
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
-    # - go generate ./...
+    - sh ./scripts/completions
 builds:
   - main: ./cmd/aidoku
     binary: aidoku
@@ -50,7 +48,7 @@ brews:
       owner: beerpiss
       name: homebrew-tap
     folder: Formula
-    homepage: https://github.com/beerpiss/aidoku-cli
+    homepage: https://github.com/Aidoku/aidoku-cli
     description: Aidoku development toolkit
     commit_msg_template: "{{.ProjectName}}: Update to version {{.Tag}}"
     license: 0BSD
@@ -77,3 +75,20 @@ changelog:
       - '^test:'
       - '^chore:'
       - '^ci:'
+  
+nfpms:
+  - license: 0BSD
+    maintainer: beerpsi <beerpsi@duck.com>
+    homepage: https://github.com/Aidoku/aidoku-cli
+    bindir: /usr/bin
+    description: Aidoku development toolkit
+    formats:
+    - deb
+    - rpm
+    contents:
+    - src: completions/_bash
+      dst: /usr/share/bash-completion/completions/aidoku
+    - src: completions/_zsh
+      dst: /usr/share/zsh/site-functions/_aidoku
+    - src: completions/_fish
+      dst: /usr/share/fish/vendor_completions.d/aidoku.fish
