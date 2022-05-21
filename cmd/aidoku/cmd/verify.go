@@ -118,9 +118,9 @@ var verifyCmd = &cobra.Command{
 					h := bounds.Dy()
 					if w != 128 && h != 128 {
 						color.Red("error: expected 128x128, found %dx%d", w, h)
-						continue
+					} else {
+						color.Green("ok")
 					}
-					color.Green("ok")
 
 					fmt.Printf("    * Testing if image is fully opaque... ")
 					if !opaque(m) {
