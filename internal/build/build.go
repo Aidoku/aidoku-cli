@@ -84,12 +84,13 @@ func BuildSource(zipFiles []string, output string) error {
 			var parser fastjson.Parser
 			hasIcon := false
 			zipFileHash := fmt.Sprintf("%x", fnv1a.HashString64(zipFile))
+			tempImageFile := fmt.Sprintf("%s/icons/%s.png", output, zipFileHash)
 			for _, f := range r.File {
 				if f.Name == "Payload/source.json" {
 					rc, err := f.Open()
 					if err != nil {
 						color.Red("error: couldn't read source info for %s: %s", zipFile, err)
-						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
+						os.Remove(tempImageFile)
 						return
 					}
 					buf := new(strings.Builder)
@@ -98,7 +99,7 @@ func BuildSource(zipFiles []string, output string) error {
 					raw, err := parser.Parse(buf.String())
 					if err != nil {
 						color.Red("error: source.json is malformed for %s: %s", zipFile, err)
-						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
+						os.Remove(tempImageFile)
 						return
 					}
 
@@ -106,7 +107,7 @@ func BuildSource(zipFiles []string, output string) error {
 					sourceInfo.Id = string(info.GetStringBytes("id"))
 					if val, ok := sourceIds.data[sourceInfo.Id]; ok {
 						color.Red("error: duplicate source identifier %s in %s, first found in %s", sourceInfo.Id, zipFile, val)
-						os.Remove(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
+						os.Remove(tempImageFile)
 						return
 					}
 					sourceIds.Lock()
@@ -137,7 +138,7 @@ func BuildSource(zipFiles []string, output string) error {
 						color.Red("error: couldn't read icon for %s", zipFile)
 						return
 					}
-					img, err := os.Create(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash))
+					img, err := os.Create(tempImageFile)
 					if err != nil {
 						color.Red("error: Couldn't create temporary icon file %s/icons/%s.png: %s", output, zipFileHash, err)
 						hasIcon = false
@@ -148,16 +149,16 @@ func BuildSource(zipFiles []string, output string) error {
 					img.Close()
 				}
 			}
-
+			imageFile := fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon)
 			if !hasIcon {
 				color.Yellow("warning: %s doesn't have an icon, generating placeholder", zipFile)
-				err = common.GeneratePng(fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
+				err = common.GeneratePng(imageFile)
 				if err != nil {
 					return
 				}
 
 			} else {
-				os.Rename(fmt.Sprintf("%s/icons/%s.png", output, zipFileHash), fmt.Sprintf("%s/icons/%s", output, sourceInfo.Icon))
+				os.Rename(tempImageFile, imageFile)
 			}
 		}(file)
 	}
