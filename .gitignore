@@ -36,5 +36,5 @@ go.work
 
 # Default build folder
 /public/
-
 dist/
+completions/
