@@ -38,8 +38,10 @@ pub mod template;
 
 func rustTemplateTemplate() []byte {
 	return []byte(`use aidoku::{
-	error::Result, std::String, std::Vec, std::net::Request, std::net::HttpMethod,
-	Listing, Manga, MangaPageResult, Page, MangaStatus, MangaContentRating, MangaViewer, Chapter, DeepLink
+	error::Result, 
+	prelude::*,
+	std::{String, Vec, net::Request},
+	Manga, MangaPageResult, Page, Chapter, DeepLink
 };
 
 pub fn get_manga_list(todo!()) -> Result<MangaPageResult> {
