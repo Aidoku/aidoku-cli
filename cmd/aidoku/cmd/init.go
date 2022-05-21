@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/text/language"
 
 	"github.com/Aidoku/aidoku-cli/internal/templates"
@@ -25,6 +26,19 @@ func checkPrompt(err error) error {
 	return nil
 }
 
+func languageValidator(lang string) bool {
+	return slices.Contains([]string{"rust-template", "rust", "as", "c"}, lang)
+}
+
+func sourceLanguageValidator(response interface{}) error {
+	if response.(string) != "multi" {
+		_, err := language.Parse(response.(string))
+		return err
+	} else {
+		return nil
+	}
+}
+
 var initCommand = &cobra.Command{
 	Use:           "init [rust-template|rust|as|c] [DIR]",
 	Short:         "Create initial code for an Aidoku source",
@@ -36,7 +50,7 @@ var initCommand = &cobra.Command{
 		name, _ := cmd.Flags().GetString("name")
 		homepage, _ := cmd.Flags().GetString("homepage")
 		nsfw, _ := cmd.Flags().GetInt("nsfw")
-		if len(args) < 1 {
+		if len(args) < 1 || !languageValidator(args[0]) {
 			prompt := &survey.Select{
 				Message: "Template",
 				Options: []string{"rust-template", "rust", "as", "c"},
@@ -67,14 +81,7 @@ var initCommand = &cobra.Command{
 				Message: "Source language",
 			}
 			var result string
-			checkPrompt(survey.AskOne(prompt, &result, survey.WithValidator(func(response interface{}) error {
-				if response.(string) != "multi" {
-					_, err := language.Parse(response.(string))
-					return err
-				} else {
-					return nil
-				}
-			})))
+			checkPrompt(survey.AskOne(prompt, &result, survey.WithValidator(sourceLanguageValidator)))
 			lang = result
 		}
 		if homepage == "" {

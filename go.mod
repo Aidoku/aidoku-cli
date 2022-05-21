@@ -11,6 +11,7 @@ require (
 	github.com/segmentio/fasthash v1.0.3
 	github.com/spf13/cobra v1.4.0
 	github.com/valyala/fastjson v1.6.3
+	golang.org/x/exp v0.0.0-20220518171630-0b5c67f07fdf
 	golang.org/x/text v0.3.7
 )
 
