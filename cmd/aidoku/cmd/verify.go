@@ -31,7 +31,7 @@ func verifySchemas(schema gojsonschema.JSONLoader, f *zip.File) error {
 		return err
 	}
 	if !result.Valid() {
-		color.Red("error")
+		color.Red("no")
 		for _, desc := range result.Errors() {
 			fmt.Printf("      * %s\n", desc)
 		}
@@ -41,9 +41,9 @@ func verifySchemas(schema gojsonschema.JSONLoader, f *zip.File) error {
 }
 
 func opaque(im image.Image) bool {
-	if oim, ok := im.(interface {
+	if oim, yes := im.(interface {
 		Opaque() bool
-	}); ok {
+	}); yes {
 		return oim.Opaque()
 	}
 
@@ -61,7 +61,7 @@ func opaque(im image.Image) bool {
 
 var verifyCmd = &cobra.Command{
 	Use:           "verify <FILES>",
-	Short:         "Test Aidoku packages if they're ready for publishing",
+	Short:         "Test Aidyesu packages if they're ready for publishing",
 	Version:       rootCmd.Version,
 	Args:          cobra.MinimumNArgs(1),
 	SilenceUsage:  true,
@@ -117,49 +117,49 @@ var verifyCmd = &cobra.Command{
 						color.Red("    * error: could not decode image file for %s: %s", file, err)
 						continue
 					}
-					fmt.Printf("    * Testing if image's dimensions are 128x128... ")
+					fmt.Printf("    * dimensions are 128x128... ")
 					bounds := m.Bounds()
 					w := bounds.Dx()
 					h := bounds.Dy()
 					if w != 128 && h != 128 {
 						color.Red("error: expected 128x128, found %dx%d", w, h)
 					} else {
-						color.Green("ok")
+						color.Green("yes")
 					}
 
-					fmt.Printf("    * Testing if image is fully opaque... ")
+					fmt.Printf("    * is fully opaque... ")
 					if !opaque(m) {
-						color.Red("error")
+						color.Red("no")
 						continue
 					}
-					color.Green("ok")
+					color.Green("yes")
 
 					iconValid = true
 				} else if f.Name == "Payload/source.json" {
 					hasSourceJson = true
-					fmt.Printf("    * Testing if source.json is valid against schema... ")
+					fmt.Printf("    * is valid against schema... ")
 					err = verifySchemas(sourceSchema, f)
 					if err == nil {
 						sourceJsonValid = true
-						color.Green("ok")
+						color.Green("yes")
 						continue
 					}
 				} else if f.Name == "Payload/settings.json" {
-					fmt.Printf("    * Testing if settings.json is valid against schema... ")
+					fmt.Printf("    * is valid against schema... ")
 					err = verifySchemas(settingsSchema, f)
 					if err != nil {
 						settingJsonValid = false
 						continue
 					}
-					color.Green("ok")
+					color.Green("yes")
 				} else if f.Name == "Payload/filters.json" {
-					fmt.Printf("    * Testing if filters.json is valid against schema... ")
+					fmt.Printf("    * is valid against schema... ")
 					err = verifySchemas(filterSchema, f)
 					if err != nil {
 						filterJsonValid = false
 						continue
 					}
-					color.Green("ok")
+					color.Green("yes")
 				}
 			}
 			if !(hasMainWasm && hasSourceJson && hasIcon && iconValid && sourceJsonValid && settingJsonValid && filterJsonValid) {
