@@ -162,6 +162,7 @@ func BuildSource(zipFiles []string, output string) error {
 		}(file)
 	}
 	wg.Wait()
+
 	b, err := json.Marshal(sourceList.data)
 	if err != nil {
 		color.Red("fatal: couldn't serialize source list: %s", err.Error())
@@ -172,13 +173,13 @@ func BuildSource(zipFiles []string, output string) error {
 	if err != nil {
 		return err
 	}
-	defer fm.Close()
 	fm.Write(b)
 	fm.Sync()
+	fm.Close()
 
 	b, err = json.MarshalIndent(sourceList.data, "", "  ")
 	if err != nil {
-		color.Red("fatal: ouldn't serialize source list: %s", err.Error())
+		color.Red("fatal: couldn't serialize source list: %s", err.Error())
 		return err
 	}
 
@@ -186,8 +187,8 @@ func BuildSource(zipFiles []string, output string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 	f.Write(b)
 	f.Sync()
+	f.Close()
 	return nil
 }
