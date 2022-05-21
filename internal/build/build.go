@@ -7,12 +7,10 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 
 	"github.com/Aidoku/aidoku-cli/internal/common"
-	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
 	"github.com/segmentio/fasthash/fnv1a"
 	"github.com/valyala/fastjson"
@@ -32,19 +30,7 @@ type source struct {
 
 func BuildWrapper(zipPatterns []string, output string) error {
 	os.RemoveAll(output)
-	var fileList []string
-	for _, arg := range zipPatterns {
-		base, pattern := doublestar.SplitPattern(filepath.ToSlash(arg))
-		fsys := os.DirFS(base)
-		files, err := doublestar.Glob(fsys, pattern)
-		if err != nil {
-			color.Red("error: invalid glob pattern %s", arg)
-			continue
-		}
-		for _, file := range files {
-			fileList = append(fileList, base+"/"+file)
-		}
-	}
+	fileList := common.ProcessGlobs(zipPatterns)
 	if len(fileList) == 0 {
 		return errors.New("no files given")
 	}

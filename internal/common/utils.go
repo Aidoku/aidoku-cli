@@ -7,8 +7,10 @@ import (
 	"io"
 	"net"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
 )
 
@@ -90,4 +92,21 @@ func GeneratePng(location string) error {
 	img.Sync()
 	img.Close()
 	return nil
+}
+
+func ProcessGlobs(globs []string) []string {
+	var fileList []string
+	for _, arg := range globs {
+		base, pattern := doublestar.SplitPattern(filepath.ToSlash(arg))
+		fsys := os.DirFS(base)
+		files, err := doublestar.Glob(fsys, pattern)
+		if err != nil {
+			color.Red("error: invalid glob pattern %s", arg)
+			continue
+		}
+		for _, file := range files {
+			fileList = append(fileList, base+"/"+file)
+		}
+	}
+	return fileList
 }
