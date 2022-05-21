@@ -13,7 +13,7 @@ scoop install beerpiss/aidoku
 or download them from [Releases](https://github.com/beerpiss/aidoku-cli/releases)
 
 # Usage
-```sh
+```pwsh
 Aidoku development toolkit
 
 Usage:
@@ -26,6 +26,7 @@ Available Commands:
   init        Create initial code for an Aidoku source
   logcat      Log streaming
   serve       Build a source list and serve it on the local network
+  verify      Test Aidoku packages if they're ready for publishing
   version     Print version
 
 Flags:
@@ -37,6 +38,20 @@ Use "aidoku [command] --help" for more information about a command.
 ```
 
 # Commands
+## `aidoku verify <FILES>`
+```pwsh
+Test Aidoku packages if they're ready for publishing
+
+Usage:
+  aidoku verify <FILES> [flags]
+
+Flags:
+  -h, --help   help for verify
+
+Global Flags:
+  -v, --verbose   verbose output
+```
+
 ## `aidoku init [rust-template|rust|as|c] [DIR]`
 ```sh
 Create initial code for an Aidoku source
