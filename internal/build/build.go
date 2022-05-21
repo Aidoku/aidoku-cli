@@ -19,13 +19,15 @@ import (
 )
 
 type source struct {
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	File    string `json:"file"`
-	Icon    string `json:"icon"`
-	Lang    string `json:"lang"`
-	Version int    `json:"version"`
-	NSFW    int    `json:"nsfw"`
+	Id         string `json:"id"`
+	Name       string `json:"name"`
+	File       string `json:"file"`
+	Icon       string `json:"icon"`
+	Lang       string `json:"lang"`
+	Version    int    `json:"version"`
+	NSFW       int    `json:"nsfw"`
+	MinVersion string `json:"minVersion,omitempty"`
+	MaxVersion string `json:"maxVersion,omitempty"`
 }
 
 func BuildWrapper(zipPatterns []string, output string) error {
@@ -117,6 +119,12 @@ func BuildSource(zipFiles []string, output string) error {
 					sourceInfo.NSFW = info.GetInt("nsfw")
 					sourceInfo.File = fmt.Sprintf("%s-v%d.aix", sourceInfo.Id, sourceInfo.Version)
 					sourceInfo.Icon = fmt.Sprintf("%s-v%d.png", sourceInfo.Id, sourceInfo.Version)
+					if minVersion := info.GetStringBytes("minVersion"); minVersion != nil {
+						sourceInfo.MinVersion = string(minVersion)
+					}
+					if maxVersion := info.GetStringBytes("maxVersion"); maxVersion != nil {
+						sourceInfo.MaxVersion = string(maxVersion)
+					}
 
 					common.CopyFileContents(zipFile, output+"/sources/"+sourceInfo.File)
 					sourceList.Lock()
