@@ -1,6 +1,13 @@
 package templates
 
-import "fmt"
+import (
+	"fmt"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
+)
 
 func asConfigJson() []byte {
 	return []byte(`{
@@ -28,7 +35,7 @@ func asConfigJson() []byte {
 
 func packageJson() []byte {
 	return []byte(`{
-	"name": "{{ .Name | ToLower }}",
+	"name": "{{ .Name | ToLower | SlugifyAs }}",
 	"version": "0.1.0",
 	"ascMain": "src/index.ts",
 	"scripts": {
@@ -119,7 +126,7 @@ func indexTs() []byte {
 	DeepLink,
 } from "aidoku-as/src";
 
-import { {{ .Name }} as Source } from "./{{ .Name }}";
+import { {{ .Name | SlugifyClass }} as Source } from "./{{ .Name | SlugifyClass }}";
 
 let source = new Source();
 
@@ -189,7 +196,7 @@ func sourceTs() []byte {
 } from "aidoku-as/src";
 
 
-export class {{ .Name }} extends Source {
+export class {{ .Name | SlugifyClass }} extends Source {
 	constructor() {
 		super();
 		// TODO
@@ -236,13 +243,14 @@ func AscGenerator(output string, source Source) error {
 	if err != nil {
 		return err
 	}
+	className := slugifyFactory(" ", transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC, ToPascalCase{}))(source.Name)
 
 	files := map[string]func() []byte{
-		"/tsconfig.json":                       tsConfigJson,
-		"/asconfig.json":                       asConfigJson,
-		"/package.json":                        packageJson,
-		"/src/index.ts":                        indexTs,
-		fmt.Sprintf("/src/%s.ts", source.Name): sourceTs,
+		"/tsconfig.json":                     tsConfigJson,
+		"/asconfig.json":                     asConfigJson,
+		"/package.json":                      packageJson,
+		"/src/index.ts":                      indexTs,
+		fmt.Sprintf("/src/%s.ts", className): sourceTs,
 	}
 	return GenerateFilesFromMap(output, source, files)
 }

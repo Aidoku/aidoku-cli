@@ -47,7 +47,7 @@ mv package.aix ../../../package.aix
 
 func rustCargoTemplate() []byte {
 	return []byte(`[package]
-name = "{{ .Name | ToLower }}"
+name = "{{ .Name | ToLower | SlugifyRust }}"
 version = "0.1.0"
 edition = "2021"
 

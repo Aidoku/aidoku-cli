@@ -19,7 +19,7 @@ lto = true
 
 func rustTemplateTemplateCargo() []byte {
 	return []byte(`[package]
-name = "{{ .Name | ToLower }}_template"
+name = "{{ .Name | ToLower | SlugifyRust }}_template"
 version = "0.1.0"
 edition = "2021"
 publish = false
