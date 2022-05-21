@@ -21,7 +21,9 @@ Usage:
 
 Available Commands:
   build       Build a source list from packages
+  completion  Generate completion script
   help        Help about any command
+  init        Create initial code for an Aidoku source
   logcat      Log streaming
   serve       Build a source list and serve it on the local network
   version     Print version
@@ -29,6 +31,7 @@ Available Commands:
 Flags:
   -h, --help      help for aidoku
   -v, --verbose   verbose output
+      --version   version for aidoku
 
 Use "aidoku [command] --help" for more information about a command.
 ```
