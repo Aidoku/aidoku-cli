@@ -89,7 +89,9 @@ var verifyCmd = &cobra.Command{
 			defer r.Close()
 
 			hasMainWasm := false
-			hasLegitIcon := false
+			hasSourceJson := false
+			hasIcon := false
+			iconValid := false
 			sourceJsonValid := false
 			filterJsonValid := true
 			settingJsonValid := true
@@ -104,6 +106,7 @@ var verifyCmd = &cobra.Command{
 					// TODO: Check if there are enough exported functions
 					fmt.Println("    * note: `aidoku verify` cannot check if the executable is valid")
 				} else if f.Name == "Payload/Icon.png" {
+					hasIcon = true
 					rc, err := f.Open()
 					if err != nil {
 						color.Red("    * error: couldn't read image file for %s: %s", file, err)
@@ -131,8 +134,9 @@ var verifyCmd = &cobra.Command{
 					}
 					color.Green("ok")
 
-					hasLegitIcon = true
+					iconValid = true
 				} else if f.Name == "Payload/source.json" {
+					hasSourceJson = true
 					fmt.Printf("    * Testing if source.json is valid against schema... ")
 					err = verifySchemas(sourceSchema, f)
 					if err == nil {
@@ -158,9 +162,15 @@ var verifyCmd = &cobra.Command{
 					color.Green("ok")
 				}
 			}
-			if !(hasMainWasm && hasLegitIcon && sourceJsonValid && settingJsonValid && filterJsonValid) {
+			if !(hasMainWasm && hasSourceJson && hasIcon && iconValid && sourceJsonValid && settingJsonValid && filterJsonValid) {
 				if !hasMainWasm {
 					color.Red("  * test failed: did not find main.wasm")
+				}
+				if !hasSourceJson {
+					color.Red("  * test failed: did not find source.json")
+				}
+				if !hasIcon {
+					color.Red("  * test failed: did not find Icon.png")
 				}
 				errored = true
 			}
