@@ -1,0 +1,52 @@
+import {
+	Chapter,
+	DeepLink,
+	Filter,
+	Listing,
+	Manga,
+	MangaPageResult,
+	Page,
+	Request,
+	Source,
+} from "aidoku-as/src";
+
+
+export class {{ .Name | SlugifyClass }} extends Source {
+	constructor() {
+		super();
+		// TODO
+	}
+
+	modifyImageRequest(request: Request): void {
+		// TODO
+	}
+
+	getMangaList(filters: Filter[], page: i32): MangaPageResult {
+		// TODO
+	}
+
+	getMangaListing(listing: Listing, page: i32): MangaPageResult {
+		// TODO
+		
+	}
+
+	getMangaDetails(mangaId: string): Manga {
+		// TODO
+	}
+
+	getChapterList(mangaId: string): Chapter[] {
+		// TODO
+	}
+
+	getPageList(chapterId: string): Page[] {
+		// TODO
+	}
+
+	private getMangaDetailsFromChapterPage(chapterId: string): Manga {
+		// TODO
+	}
+
+	handleUrl(url: string): DeepLink | null {
+		// TODO
+	}
+}

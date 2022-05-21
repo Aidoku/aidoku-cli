@@ -1,0 +1,96 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema",
+	"title": "Aidoku source specification",
+	"definitions": {
+		"language": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "string"
+				},
+				"value": {
+					"type": "string"
+				},
+				"default": {
+					"type": "boolean"
+				}
+			},
+			"required": [
+				"code"
+			],
+			"additionalProperties": false
+		},
+		"sourceInfo": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string"
+				},
+				"lang": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+				},
+				"version": {
+					"type": "integer"
+				},
+				"url": {
+					"type": "string"
+				},
+				"urls": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"nsfw": {
+					"type": "integer"
+				}
+			},
+			"required": [
+				"id",
+				"lang",
+				"name",
+				"version"
+			],
+			"additionalProperties": false
+		},
+		"listing": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"flags": {
+					"type": "integer"
+				}
+			},
+			"required": [
+				"name"
+			],
+			"additionalProperties": false
+		} 
+	},
+	"type": "object",
+	"properties": {
+		"info": {
+			"$ref": "#/definitions/sourceInfo"
+		},
+		"languages": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/language"
+			}
+		},
+		"listings": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/listing"
+			}
+		}
+	},
+	"required": [
+		"info"
+	]
+}

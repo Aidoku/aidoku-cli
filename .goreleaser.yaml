@@ -23,6 +23,9 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     flags:
       - -trimpath
+    hooks:
+      post:
+      - rice append -i ./cmd/aidoku/cmd -i ./internal/templates --exec "{{ .Path }}"
     ldflags: | 
       -s -w
       -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.version={{.Version}} 

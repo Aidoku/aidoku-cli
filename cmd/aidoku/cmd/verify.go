@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/Aidoku/aidoku-cli/internal/common"
-	"github.com/Aidoku/aidoku-cli/internal/verify"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
@@ -73,9 +73,10 @@ var verifyCmd = &cobra.Command{
 
 		zipFiles := common.ProcessGlobs(args)
 
-		filterSchema := gojsonschema.NewStringLoader(verify.FilterSchema())
-		sourceSchema := gojsonschema.NewStringLoader(verify.SourceSchema())
-		settingsSchema := gojsonschema.NewStringLoader(verify.SettingsSchema())
+		box := rice.MustFindBox("resources")
+		filterSchema := gojsonschema.NewStringLoader(box.MustString("schemas/filters.schema.json"))
+		sourceSchema := gojsonschema.NewStringLoader(box.MustString("schemas/source.schema.json"))
+		settingsSchema := gojsonschema.NewStringLoader(box.MustString("schemas/settings.schema.json"))
 
 		errored := false
 
@@ -101,6 +102,7 @@ var verifyCmd = &cobra.Command{
 				if f.Name == "Payload/main.wasm" {
 					hasMainWasm = true
 					// TODO: Check if there are enough exported functions
+					fmt.Println("    * note: `aidoku verify` cannot check if the executable is valid")
 				} else if f.Name == "Payload/Icon.png" {
 					rc, err := f.Open()
 					if err != nil {

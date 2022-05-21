@@ -1,0 +1,20 @@
+[package]
+name = "{{ .Name | ToLower | SlugifyRust }}"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+{{ if eq (len .TemplateName) 0 }}
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+opt-level = "s"
+strip = true
+lto = true
+{{ end }}
+[dependencies]
+aidoku = { git = "https://github.com/Aidoku/aidoku-rs" }{{ if not (eq (len .TemplateName) 0) }}
+{{ .TemplateName }} = { path = "../../template" }{{ end }}

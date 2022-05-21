@@ -9,6 +9,7 @@ import (
 	"unicode"
 
 	"github.com/Aidoku/aidoku-cli/internal/common"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/fatih/color"
 	"github.com/iancoleman/strcase"
 	"golang.org/x/text/runes"
@@ -21,110 +22,14 @@ type Source struct {
 	Nsfw                                   int
 }
 
-func commonSourceJson() []byte {
-	return []byte(`{
-	"info": {
-		"id": "{{ .Language }}.{{ .Name | ToLower | SlugifyAs }}",
-		"lang": "{{ .Language }}",
-		"name": "{{ .Name }}",
-		"version": 1,
-		"url": "{{ .Homepage }}",
-		"nsfw": {{ .Nsfw }}
-	},{{ if eq .Language "multi" }}
-	"languages": [
+var (
+	box = rice.MustFindBox("resources")
+)
 
-	],
-	{{ end }}
-	"listings": [
-
-	]
-}
-`)
-}
-
-func commonSettingsJson() []byte {
-	return []byte(`[
-	{
-		"type": "group",
-		"title": "Settings",
-		"footer": "You can have footers for a setting group",
-		"items": [
-			{
-				"type": "select",
-				"key": "something",
-				"title": "A select option",
-				"values": ["your", "values", "here"],
-				"titles": ["your", "titles", "here"],
-				"default": "here"
-			},
-			{
-				"type": "switch",
-				"key": "something2",
-				"title": "A switch",
-				"subtitle": "A subtext to describe this option",
-				"default": false
-			},
-			{
-				"type": "text",
-				"key": "something3",
-				"placeholder": "A text box"
-			}
-		]
+func templateFactory(box *rice.Box, path string) func() []byte {
+	return func() []byte {
+		return box.MustBytes(path)
 	}
-]`)
-}
-
-func commonFilterJson() []byte {
-	return []byte(`[
-	{
-		"type": "title"
-	},
-	{
-		"type": "author"
-	},
-	{
-		"type": "group",
-		"name": "A group filter",
-		"filters": [
-			{
-				"type": "check",
-				"name": "A checkbox",
-				"default": true
-			}
-		]
-	},
-	{
-		"type": "group",
-		"name": "Another group filter",
-		"filters": [
-			{
-				"type": "genre",
-				"name": "A genre",
-				"canExclude": true
-			}
-		]
-	},
-	{
-		"type": "select",
-		"name": "A select filter",
-		"options": [
-
-		]
-	},
-	{
-		"type": "sort",
-		"name": "A sorter",
-		"canAscend": true,
-		"options": [
-
-		],
-		"default": {
-			"index": 0,
-			"ascending": false
-		}
-	}
-]
-`)
 }
 
 type ToPascalCase struct {
@@ -212,9 +117,9 @@ func GenerateCommon(output string, source Source) error {
 	}
 
 	files := map[string]func() []byte{
-		"/res/source.json":   commonSourceJson,
-		"/res/filters.json":  commonFilterJson,
-		"/res/settings.json": commonSettingsJson,
+		"/res/source.json":   templateFactory(box, "common/res/source.json.tmpl"),
+		"/res/filters.json":  templateFactory(box, "common/res/filters.json.tmpl"),
+		"/res/settings.json": templateFactory(box, "common/res/source.json.tmpl"),
 	}
 	return GenerateFilesFromMap(output, source, files)
 }

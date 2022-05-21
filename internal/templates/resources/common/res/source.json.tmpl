@@ -1,0 +1,17 @@
+{
+	"info": {
+		"id": "{{ .Language }}.{{ .Name | ToLower | SlugifyAs }}",
+		"lang": "{{ .Language }}",
+		"name": "{{ .Name }}",
+		"version": 1,
+		"url": "{{ .Homepage }}",
+		"nsfw": {{ .Nsfw }}
+	},{{ if eq .Language "multi" }}
+	"languages": [
+
+	],
+	{{ end }}
+	"listings": [
+
+	]
+}
