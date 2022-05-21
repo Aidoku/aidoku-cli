@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/Aidoku/aidoku-cli/internal/build"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,9 @@ var buildCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if ForceColor {
+			color.NoColor = false
+		}
 		output, _ := cmd.Flags().GetString("output")
 		return build.BuildWrapper(args, output)
 	},

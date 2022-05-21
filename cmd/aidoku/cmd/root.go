@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	Verbose bool
+	Verbose    bool
+	ForceColor bool
 
 	version = "develop"
 	commit  string
@@ -30,6 +31,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVar(&ForceColor, "force-color", false, "always output with color")
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 
 	formattedVersion := FormatVersion(version, commit, date, builtBy)

@@ -27,6 +27,10 @@ var logcatCmd = &cobra.Command{
 			os.Exit(0)
 		}()
 
+		if ForceColor {
+			color.NoColor = false
+		}
+
 		address, _ := cmd.Flags().GetString("address")
 		port, _ := cmd.Flags().GetString("port")
 		http.HandleFunc("/", logcat.Logcat)

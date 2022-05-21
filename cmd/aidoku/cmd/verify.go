@@ -67,6 +67,10 @@ var verifyCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if ForceColor {
+			color.NoColor = false
+		}
+
 		zipFiles := common.ProcessGlobs(args)
 
 		filterSchema := gojsonschema.NewStringLoader(verify.FilterSchema())

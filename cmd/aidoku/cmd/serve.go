@@ -35,6 +35,10 @@ var serveCmd = &cobra.Command{
 			os.Exit(0)
 		}()
 
+		if ForceColor {
+			color.NoColor = false
+		}
+
 		address, _ := cmd.Flags().GetString("address")
 		output, _ := cmd.Flags().GetString("output")
 		port, _ := cmd.Flags().GetString("port")
