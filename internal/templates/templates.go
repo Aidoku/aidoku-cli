@@ -51,10 +51,9 @@ func (t ToPascalCase) Reset() {
 
 func slugifyFactory(whitespaceReplacer string, t transform.Transformer) func(string) string {
 	return func(val string) string {
-		val = strings.TrimSpace(val)
-		val = strings.ReplaceAll(val, " ", whitespaceReplacer)
-		val, _, _ = transform.String(t, val)
-		return val
+		temp := strings.ReplaceAll(strings.TrimSpace(val), " ", whitespaceReplacer)
+		ret, _, _ := transform.String(t, temp)
+		return ret
 	}
 }
 
@@ -119,7 +118,7 @@ func GenerateCommon(output string, source Source) error {
 	files := map[string]func() []byte{
 		"/res/source.json":   templateFactory(box, "common/res/source.json.tmpl"),
 		"/res/filters.json":  templateFactory(box, "common/res/filters.json.tmpl"),
-		"/res/settings.json": templateFactory(box, "common/res/source.json.tmpl"),
+		"/res/settings.json": templateFactory(box, "common/res/settings.json.tmpl"),
 	}
 	return GenerateFilesFromMap(output, source, files)
 }
