@@ -69,8 +69,7 @@ var serveCmd = &cobra.Command{
 				fmt.Printf("[%s] \"%s %s\" Error (%s): \"%s\"\n", timestamp, red(method), red(url), red(statusCode), red(http.StatusText(statusCode)))
 			}
 		})
-		http.ListenAndServe(address+":"+port, wrappedHandler)
-		return nil
+		return http.ListenAndServe(address+":"+port, wrappedHandler)
 	},
 }
 

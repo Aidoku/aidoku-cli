@@ -71,8 +71,7 @@ var logcatCmd = &cobra.Command{
 			color.Green("    http://%s:%s", address, port)
 		}
 
-		http.ListenAndServe(address+":"+port, nil)
-		return nil
+		return http.ListenAndServe(address+":"+port, nil)
 	},
 }
 
