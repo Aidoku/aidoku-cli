@@ -65,7 +65,7 @@ var serveCmd = &cobra.Command{
 			m := httpsnoop.CaptureMetrics(handler, w, r)
 			timestamp = time.Now().UTC().Format(time.RFC3339)
 			statusCode := m.Code
-			if statusCode != http.StatusOK {
+			if statusCode >= 400 {
 				fmt.Printf("[%s] \"%s %s\" Error (%s): \"%s\"\n", timestamp, red(method), red(url), red(statusCode), red(http.StatusText(statusCode)))
 			}
 		})
