@@ -15,6 +15,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/exp v0.0.0-20220518171630-0b5c67f07fdf
 	golang.org/x/text v0.3.7
+	github.com/fsnotify/fsnotify v1.5.4
 )
 
 require (

@@ -5,14 +5,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
+	"sync"
 	"syscall"
 	"time"
 
 	"github.com/Aidoku/aidoku-cli/internal/build"
 	"github.com/Aidoku/aidoku-cli/internal/common"
+	"github.com/Aidoku/aidoku-cli/internal/watcher"
 	"github.com/fatih/color"
 	"github.com/felixge/httpsnoop"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/maps"
 )
 
 var (
@@ -42,8 +46,10 @@ var serveCmd = &cobra.Command{
 		address, _ := cmd.Flags().GetString("address")
 		output, _ := cmd.Flags().GetString("output")
 		port, _ := cmd.Flags().GetString("port")
+		watch, _ := cmd.Flags().GetBool("watch")
 
-		build.BuildWrapper(args, output)
+		files := common.ProcessGlobs(args)
+		build.BuildWrapper(files, output)
 
 		fmt.Println("Listening on these addresses:")
 		if address == "0.0.0.0" {
@@ -69,12 +75,55 @@ var serveCmd = &cobra.Command{
 				fmt.Printf("[%s] \"%s %s\" Error (%s): \"%s\"\n", timestamp, red(method), red(url), red(statusCode), red(http.StatusText(statusCode)))
 			}
 		})
+		if watch {
+			watcher, err := watcher.New(500*time.Millisecond, 500*time.Millisecond, false)
+			var buildLock sync.Mutex
+			if err != nil {
+				color.Red("error: Couldn't create file watcher. Not watching for changes.")
+				color.Red("details: %s", err)
+			} else {
+				defer watcher.Close()
+				go func() {
+					for {
+						select {
+						case events, ok := <-watcher.Events:
+							if !ok {
+								return
+							}
+							changed := make(map[string]string)
+							for _, event := range events {
+								if _, ok := changed[event.Name]; !ok {
+									changed[event.Name] = ""
+								}
+							}
+							color.HiBlack("File changed, rebuilding source list: %s", strings.Join(maps.Keys(changed), ", "))
+							buildLock.Lock()
+							build.BuildWrapper(files, output)
+							buildLock.Unlock()
+						case err, ok := <-watcher.Errors():
+							if !ok {
+								return
+							}
+							color.Red("file watcher error: %s", err)
+						}
+					}
+				}()
+				for _, file := range files {
+					err = watcher.Add(file)
+					if err != nil {
+						color.Red("error: could not watch %s: %s", file, err)
+					}
+				}
+			}
+			fmt.Printf("Watching %d file(s) for changes\n", len(files))
+		}
 		return http.ListenAndServe(address+":"+port, wrappedHandler)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
+	serveCmd.Flags().BoolP("watch", "w", false, "Watch files for changes")
 	serveCmd.Flags().StringP("address", "a", "0.0.0.0", "Address to broadcast source list")
 	serveCmd.Flags().StringP("port", "p", "8080", "The port to broadcast the source list on")
 	serveCmd.Flags().StringP("output", "o", "public", "The source list folder")
