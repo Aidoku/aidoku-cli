@@ -15,7 +15,6 @@ import (
 	"github.com/Aidoku/aidoku-cli/internal/watcher"
 	"github.com/fatih/color"
 	"github.com/felixge/httpsnoop"
-	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/maps"
 )
@@ -87,11 +86,11 @@ var serveCmd = &cobra.Command{
 				}
 			}
 			watcher, err := watcher.New(500*time.Millisecond, pollInterval, len(poll) > 0)
-			var buildLock sync.Mutex
 			if err != nil {
 				color.Red("error: couldn't create file watcher, not watching for changes: %s", err)
 			} else {
 				defer watcher.Close()
+				var buildLock sync.Mutex
 				go func() {
 					for {
 						select {
@@ -101,7 +100,7 @@ var serveCmd = &cobra.Command{
 							}
 							changed_map := make(map[string]string)
 							for _, event := range events {
-								if _, ok := changed_map[event.Name]; !ok && event.Op&fsnotify.Write == fsnotify.Write {
+								if _, ok := changed_map[event.Name]; !ok {
 									changed_map[event.Name] = ""
 								}
 							}
@@ -127,7 +126,7 @@ var serveCmd = &cobra.Command{
 					}
 				}
 			}
-			fmt.Printf("Watching %d file(s) for changes\n", len(files))
+			fmt.Printf("Watching %d file(s) for changes\n", len(watcher.WatchList()))
 		}
 		return http.ListenAndServe(address+":"+port, wrappedHandler)
 	},
@@ -135,11 +134,12 @@ var serveCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
-	serveCmd.Flags().BoolP("watch", "w", false, "Watch files for changes")
-	serveCmd.Flags().String("poll", "", "The poll interval")
 	serveCmd.Flags().StringP("address", "a", "0.0.0.0", "Address to broadcast source list")
 	serveCmd.Flags().StringP("port", "p", "8080", "The port to broadcast the source list on")
 	serveCmd.Flags().StringP("output", "o", "public", "The source list folder")
+	serveCmd.Flags().BoolP("watch", "w", false, "Watch for file changes and rebuild source list as needed")
+	serveCmd.Flags().String("poll", "", "Watch for file changes with a poll-based approach")
+	serveCmd.Flags().Lookup("poll").NoOptDefVal = "500ms"
 
 	serveCmd.MarkZshCompPositionalArgumentFile(1, "*.aix")
 	serveCmd.ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

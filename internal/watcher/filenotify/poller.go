@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
+	"golang.org/x/exp/maps"
 )
 
 var (
@@ -38,6 +39,11 @@ type filePoller struct {
 	mu sync.Mutex
 	// closed is used to specify when the poller has already closed
 	closed bool
+}
+
+// WatchList returns the directories and files that are being monitored.
+func (w *filePoller) WatchList() []string {
+	return maps.Keys(w.watches)
 }
 
 // Add adds a filename to the list of watches

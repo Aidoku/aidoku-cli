@@ -60,14 +60,15 @@ func New(intervalBatcher, intervalPoll time.Duration, poll bool) (*Batcher, erro
 }
 
 func (b *Batcher) run() {
-	tick := time.NewTicker(b.interval)
+	//lint:ignore SA1015 it's a looping function
+	tick := time.Tick(b.interval)
 	evs := make([]fsnotify.Event, 0)
 OuterLoop:
 	for {
 		select {
 		case ev := <-b.FileWatcher.Events():
 			evs = append(evs, ev)
-		case <-tick.C:
+		case <-tick:
 			if len(evs) == 0 {
 				continue
 			}

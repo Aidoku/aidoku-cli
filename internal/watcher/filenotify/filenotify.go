@@ -19,6 +19,7 @@ type FileWatcher interface {
 	Add(name string) error
 	Remove(name string) error
 	Close() error
+	WatchList() []string
 }
 
 // New tries to use an fs-event watcher, and falls back to the poller if there is an error
