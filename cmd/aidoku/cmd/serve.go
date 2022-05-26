@@ -15,6 +15,7 @@ import (
 	"github.com/Aidoku/aidoku-cli/internal/watcher"
 	"github.com/fatih/color"
 	"github.com/felixge/httpsnoop"
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/maps"
 )
@@ -98,16 +99,19 @@ var serveCmd = &cobra.Command{
 							if !ok {
 								return
 							}
-							changed := make(map[string]string)
+							changed_map := make(map[string]string)
 							for _, event := range events {
-								if _, ok := changed[event.Name]; !ok {
-									changed[event.Name] = ""
+								if _, ok := changed_map[event.Name]; !ok && event.Op&fsnotify.Write == fsnotify.Write {
+									changed_map[event.Name] = ""
 								}
 							}
-							color.HiBlack("File changed, rebuilding source list: %s", strings.Join(maps.Keys(changed), ", "))
-							buildLock.Lock()
-							build.BuildWrapper(files, output)
-							buildLock.Unlock()
+							changed := maps.Keys(changed_map)
+							if len(changed) > 0 {
+								color.HiBlack("File changed, rebuilding source list: %s", strings.Join(changed, ", "))
+								buildLock.Lock()
+								build.BuildWrapper(files, output)
+								buildLock.Unlock()
+							}
 						case err, ok := <-watcher.Errors():
 							if !ok {
 								return
