@@ -47,6 +47,7 @@ var serveCmd = &cobra.Command{
 		output, _ := cmd.Flags().GetString("output")
 		port, _ := cmd.Flags().GetString("port")
 		watch, _ := cmd.Flags().GetBool("watch")
+		poll, _ := cmd.Flags().GetString("poll")
 
 		files := common.ProcessGlobs(args)
 		build.BuildWrapper(files, output)
@@ -75,12 +76,19 @@ var serveCmd = &cobra.Command{
 				fmt.Printf("[%s] \"%s %s\" Error (%s): \"%s\"\n", timestamp, red(method), red(url), red(statusCode), red(http.StatusText(statusCode)))
 			}
 		})
-		if watch {
-			watcher, err := watcher.New(500*time.Millisecond, 500*time.Millisecond, false)
+		if watch || len(poll) > 0 {
+			var pollInterval time.Duration
+			var err error
+			if len(poll) > 0 {
+				pollInterval, err = common.ToDurationE(poll)
+				if err != nil {
+					return fmt.Errorf("error: invalid value for --poll: %s", err)
+				}
+			}
+			watcher, err := watcher.New(500*time.Millisecond, pollInterval, len(poll) > 0)
 			var buildLock sync.Mutex
 			if err != nil {
-				color.Red("error: Couldn't create file watcher. Not watching for changes.")
-				color.Red("details: %s", err)
+				color.Red("error: couldn't create file watcher, not watching for changes: %s", err)
 			} else {
 				defer watcher.Close()
 				go func() {
@@ -104,7 +112,7 @@ var serveCmd = &cobra.Command{
 							if !ok {
 								return
 							}
-							color.Red("file watcher error: %s", err)
+							color.Red("error: file watcher error: %s", err)
 						}
 					}
 				}()
@@ -124,6 +132,7 @@ var serveCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serveCmd)
 	serveCmd.Flags().BoolP("watch", "w", false, "Watch files for changes")
+	serveCmd.Flags().String("poll", "", "The poll interval")
 	serveCmd.Flags().StringP("address", "a", "0.0.0.0", "Address to broadcast source list")
 	serveCmd.Flags().StringP("port", "p", "8080", "The port to broadcast the source list on")
 	serveCmd.Flags().StringP("output", "o", "public", "The source list folder")
