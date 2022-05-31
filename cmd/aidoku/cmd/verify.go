@@ -91,7 +91,8 @@ var verifyCmd = &cobra.Command{
 			hasMainWasm := false
 			hasSourceJson := false
 			hasIcon := false
-			iconValid := false
+			iconSizeValid := false
+			iconOpaque := false
 			sourceJsonValid := false
 			filterJsonValid := true
 			settingJsonValid := true
@@ -125,16 +126,17 @@ var verifyCmd = &cobra.Command{
 						color.Red("error: expected 128x128, found %dx%d", w, h)
 					} else {
 						color.Green("yes")
+						iconSizeValid = true
 					}
 
 					fmt.Printf("    * is fully opaque... ")
 					if !opaque(m) {
 						color.Red("no")
-						continue
+					} else {
+						color.Green("yes")
+						iconOpaque = true
 					}
-					color.Green("yes")
 
-					iconValid = true
 				} else if f.Name == "Payload/source.json" {
 					hasSourceJson = true
 					fmt.Printf("    * is valid against schema... ")
@@ -162,7 +164,7 @@ var verifyCmd = &cobra.Command{
 					color.Green("yes")
 				}
 			}
-			if !(hasMainWasm && hasSourceJson && hasIcon && iconValid && sourceJsonValid && settingJsonValid && filterJsonValid) {
+			if !(hasMainWasm && hasSourceJson && hasIcon && iconSizeValid && iconOpaque && sourceJsonValid && settingJsonValid && filterJsonValid) {
 				if !hasMainWasm {
 					color.Red("  * test failed: did not find main.wasm")
 				}
