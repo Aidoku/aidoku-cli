@@ -88,6 +88,10 @@
 			"items": {
 				"$ref": "#/definitions/listing"
 			}
+		},
+		"languageSelectType": {
+			"type": "string",
+			"description": "Accepts any value, but only \"single\" has meaning"
 		}
 	},
 	"required": [
