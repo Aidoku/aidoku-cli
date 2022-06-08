@@ -40,31 +40,12 @@
 			},
 			"additionalProperties": false
 		},
-		"checkFilter": {
+		"checkOrGenreFilter": {
 			"type": "object",
 			"properties": {
 				"type": {
 					"type": "string",
-					"enum": ["check"]
-				},
-				"name": {
-					"type": "string"
-				},
-				"default": {
-					"type": "boolean"
-				},
-				"canExclude": {
-					"type": "boolean"
-				}
-			},
-			"additionalProperties": false
-		},
-		"genreFilter": {
-			"type": "object",
-			"properties": {
-				"type": {
-					"type": "string",
-					"enum": ["genre"]
+					"enum": ["genre", "check"]
 				}, 
 				"name": {
 					"type": "string"
@@ -134,10 +115,7 @@
 		"filter": {
 			"anyOf": [
 				{
-					"$ref": "#/definitions/checkFilter"
-				},
-				{
-					"$ref": "#/definitions/genreFilter"
+					"$ref": "#/definitions/checkOrGenreFilter"
 				},
 				{
 					"$ref": "#/definitions/titleOrAuthorFilter"
