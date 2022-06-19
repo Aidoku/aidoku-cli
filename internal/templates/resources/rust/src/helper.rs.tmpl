@@ -61,12 +61,12 @@ pub fn text_with_newlines(node: Node) -> String {
 		Node::new_fragment(
 			node.html()
 				.read()
-				.replace("<br>", "{{ .LINEBREAK }}")
+				.replace("<br>", "{{ "{{ .LINEBREAK }}" }}")
 				.as_bytes(),
 		)
 		.text()
 		.read()
-		.replace("{{ .LINEBREAK }}", "\n")
+		.replace("{{ "{{ .LINEBREAK }}" }}", "\n")
 	} else {
 		String::new()
 	}
