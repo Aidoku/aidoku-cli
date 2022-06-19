@@ -13,10 +13,9 @@ function Package-Source {
 		Write-Output "packaging $source"
 		New-Item -ItemType Directory -Path target/wasm32-unknown-unknown/release/Payload -Force | Out-Null
 		Copy-Item res/* target/wasm32-unknown-unknown/release/Payload -ErrorAction SilentlyContinue
-		Copy-Item sources/$source/res/* target/wasm32-unknown-unknown/release/Payload -ErrorAction SilentlyContinue
 		Set-Location target/wasm32-unknown-unknown/release
-		Copy-Item "$source.wasm" Payload/main.wasm
-		Compress-Archive -Force -DestinationPath "../../../$source.aix" -Path Payload
+		Copy-Item *.wasm Payload/main.wasm
+		Compress-Archive -Force -DestinationPath "../../../package.aix" -Path Payload
 		Remove-Item -Recurse -Force Payload/
 		Set-Location ../../..
 	}

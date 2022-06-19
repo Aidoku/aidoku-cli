@@ -50,11 +50,7 @@ func BuildSource(zipFiles []string, output string) error {
 		sync.Mutex
 		data []source
 	}{}
-	sourceIds := struct {
-		sync.Mutex
-		data map[string]string
-	}{}
-	sourceIds.data = make(map[string]string)
+	sourceIds := sync.Map{}
 	for _, file := range zipFiles {
 		wg.Add(1)
 		go func(zipFile string) {
@@ -91,14 +87,12 @@ func BuildSource(zipFiles []string, output string) error {
 
 					info := raw.Get("info")
 					sourceInfo.Id = string(info.GetStringBytes("id"))
-					if val, ok := sourceIds.data[sourceInfo.Id]; ok {
+					if val, ok := sourceIds.Load(sourceInfo.Id); ok {
 						color.Red("error: duplicate source identifier %s in %s, first found in %s", sourceInfo.Id, zipFile, val)
 						os.Remove(tempImageFile)
 						return
 					}
-					sourceIds.Lock()
-					sourceIds.data[sourceInfo.Id] = zipFile
-					sourceIds.Unlock()
+					sourceIds.Store(sourceInfo.Id, zipFile)
 
 					sourceInfo.Lang = string(info.GetStringBytes("lang"))
 					sourceInfo.Name = string(info.GetStringBytes("name"))

@@ -1,5 +1,6 @@
 #![no_std]
-mod helper;
+{{ if eq (len .TemplateName) 0 }}
+mod helper;{{ end }}
 use aidoku::{
 	error::Result,
 	prelude::*,

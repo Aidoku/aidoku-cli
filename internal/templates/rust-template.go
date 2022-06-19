@@ -1,6 +1,11 @@
 package templates
 
-import "os"
+import (
+	"os"
+	"os/exec"
+	"path"
+	"strings"
+)
 
 func RustTemplateGenerator(output string, source Source) error {
 	err := GenerateCommon(output, source)
@@ -23,5 +28,21 @@ func RustTemplateGenerator(output string, source Source) error {
 		"/template/src/helper.rs":   templateFactory(box, "rust/src/helper.rs.tmpl"),
 		"/template/src/template.rs": templateFactory(box, "rust-template/template/src/template.rs.tmpl"),
 	}
-	return GenerateFilesFromMap(output, source, files)
+	// Make the build script executable
+	err = GenerateFilesFromMap(output, source, files)
+	if err != nil {
+		return err
+	}
+	os.Chmod(path.Join(output, "build.sh"), os.FileMode(0755))
+	git, err := exec.LookPath("git")
+	if err == nil {
+		cmd := exec.Command(git, "rev-parse", "--is-inside-work-tree")
+		stdout, _ := cmd.Output()
+		if strings.Contains(string(stdout), "true") {
+			exec.Command(git, "update-index", "--chmod=+x", "build.sh")
+		}
+		return nil
+	} else {
+		return err
+	}
 }

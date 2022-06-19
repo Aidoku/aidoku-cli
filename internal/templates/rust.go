@@ -2,6 +2,9 @@ package templates
 
 import (
 	"os"
+	"os/exec"
+	"path"
+	"strings"
 )
 
 func RustGenerator(output string, source Source) error {
@@ -21,5 +24,21 @@ func RustGenerator(output string, source Source) error {
 		files["/build.ps1"] = templateFactory(box, "rust/build.ps1.tmpl")
 		files["/src/helper.rs"] = templateFactory(box, "rust/src/helper.rs.tmpl")
 	}
-	return GenerateFilesFromMap(output, source, files)
+	// Make the build script executable
+	err = GenerateFilesFromMap(output, source, files)
+	if err != nil {
+		return err
+	}
+	os.Chmod(path.Join(output, "build.sh"), os.FileMode(0755))
+	git, err := exec.LookPath("git")
+	if err == nil {
+		cmd := exec.Command(git, "rev-parse", "--is-inside-work-tree")
+		stdout, _ := cmd.Output()
+		if strings.Contains(string(stdout), "true") {
+			exec.Command(git, "update-index", "--chmod=+x", "build.sh")
+		}
+		return nil
+	} else {
+		return err
+	}
 }
