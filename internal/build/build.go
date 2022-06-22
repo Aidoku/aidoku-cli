@@ -24,8 +24,8 @@ type source struct {
 	Lang       string `json:"lang"`
 	Version    int    `json:"version"`
 	NSFW       int    `json:"nsfw"`
-	MinVersion string `json:"minVersion,omitempty"`
-	MaxVersion string `json:"maxVersion,omitempty"`
+	MinVersion string `json:"minAppVersion,omitempty"`
+	MaxVersion string `json:"maxAppVersion,omitempty"`
 }
 
 func BuildWrapper(zipPatterns []string, output string) error {
@@ -100,10 +100,10 @@ func BuildSource(zipFiles []string, output string) error {
 					sourceInfo.NSFW = info.GetInt("nsfw")
 					sourceInfo.File = fmt.Sprintf("%s-v%d.aix", sourceInfo.Id, sourceInfo.Version)
 					sourceInfo.Icon = fmt.Sprintf("%s-v%d.png", sourceInfo.Id, sourceInfo.Version)
-					if minVersion := info.GetStringBytes("minVersion"); minVersion != nil {
+					if minVersion := info.GetStringBytes("minAppVersion"); minVersion != nil {
 						sourceInfo.MinVersion = string(minVersion)
 					}
-					if maxVersion := info.GetStringBytes("maxVersion"); maxVersion != nil {
+					if maxVersion := info.GetStringBytes("maxAppVersion"); maxVersion != nil {
 						sourceInfo.MaxVersion = string(maxVersion)
 					}
 
