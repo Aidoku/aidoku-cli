@@ -17,8 +17,7 @@
 			},
 			"required": [
 				"code"
-			],
-			"additionalProperties": false
+			]
 		},
 		"sourceInfo": {
 			"type": "object",
@@ -33,7 +32,8 @@
 					"type": "string"
 				},
 				"version": {
-					"type": "integer"
+					"type": "integer",
+					"minimum": 1
 				},
 				"url": {
 					"type": "string"
@@ -45,7 +45,17 @@
 					}
 				},
 				"nsfw": {
-					"type": "integer"
+					"type": "integer",
+					"minimum": 0,
+					"maximum": 2
+				},
+				"minAppVersion": {
+					"type": "string",
+					"pattern": "\\d+\\.\\d+"
+				},
+				"maxAppVersion": {
+					"type": "string",
+					"pattern": "\\d+\\.\\d+"
 				}
 			},
 			"required": [
@@ -53,8 +63,7 @@
 				"lang",
 				"name",
 				"version"
-			],
-			"additionalProperties": false
+			]
 		},
 		"listing": {
 			"type": "object",
@@ -69,9 +78,8 @@
 			},
 			"required": [
 				"name"
-			],
-			"additionalProperties": false
-		} 
+			]
+		}
 	},
 	"type": "object",
 	"properties": {
@@ -92,6 +100,10 @@
 		},
 		"languageSelectType": {
 			"type": "string",
+			"enum": [
+				"single",
+				"multi"
+			],
 			"description": "Accepts any value, but only \"single\" has meaning"
 		}
 	},
