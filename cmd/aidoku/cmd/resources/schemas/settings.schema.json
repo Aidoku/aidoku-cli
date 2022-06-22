@@ -30,102 +30,356 @@
 				}
 			]
 		},
-		"settings": {
+		"_settingsBase": {
+			"type": "object",
+			"properties": {
+				"key": {
+					"description": "The defaults key to access the setting with.",
+					"type": "string"
+				},
+				"title": {
+					"description": "Setting name, as displayed to users.",
+					"type": "string"
+				},
+				"subtitle": {
+					"description": "Setting subtitle, displayed as smaller gray text under the title.",
+					"type": "string"
+				},
+				"notification": {
+					"description": "A notification to be posted whenever the value for this setting changes.",
+					"type": "string"
+				},
+				"footer": {
+					"description": "Text that will be placed at the end of the setting.",
+					"type": "string"
+				},
+				"default": {
+					"description": "The default value for this setting.",
+					"$ref": "#/definitions/any"
+				},
+				"requires": {
+					"description": "Require that another setting be enabled before this one can be modified.",
+					"type": "string"
+				},
+				"requiresFalse": {
+					"description": "Require that another setting be disabled before this one can be modified.",
+					"type": "string"
+				},
+				"destructive": {
+					"description": "Marks an action as destructive.",
+					"type": "boolean"
+				}
+			},
+			"required": [
+				"key"
+			]
+		},
+		"_selectableSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_settingsBase"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"titles": {
+							"description": "A list of display names for the options.",
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"values": {
+							"description": "The actual values for the options.",
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			]
+		},
+		"switchSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_settingsBase"
+				},
+				{
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"switch"
+							]
+						},
+						"authToEnable": {
+							"description": "Requires Face ID/Touch ID authentication to enable a switch.",
+							"type": "boolean"
+						},
+						"authToDisable": {
+							"description": "Requires Face ID/Touch ID authentication to disable a switch.",
+							"type": "boolean"
+						},
+						"default": {
+							"description": "The default value for this switch.",
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"stepperSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_settingsBase"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"stepper"
+							]
+						},
+						"minimumValue": {
+							"description": "Minimum value for the stepper.",
+							"type": "number"
+						},
+						"maximumValue": {
+							"description": "Maximum value for the stepper.",
+							"type": "number"
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"textSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_settingsBase"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"text"
+							]
+						},
+						"placeholder": {
+							"description": "The placeholder for the text field.",
+							"type": "string"
+						},
+						"autocapitalizationType": {
+							"description": "The auto-capitalization type for the text field. Refer to [UITextAutocapitalizationType](https://developer.apple.com/documentation/uikit/uitextautocapitalizationtype) for possible values.",
+							"type": "integer",
+							"minimum": 0,
+							"maximum": 3
+						},
+						"autocorrectionType": {
+							"description": "The auto-correction behavior of the text field. Refer to [UITextAutocorrectionType](https://developer.apple.com/documentation/uikit/uitextautocorrectiontype) for possible values.",
+							"type": "integer",
+							"minimum": 0,
+							"maximum": 2
+						},
+						"spellCheckingType": {
+							"description": "The spell-checking behavior of the text field. Refer to [UITextSpellCheckingType](https://developer.apple.com/documentation/uikit/uitextspellcheckingtype) for possible values.",
+							"type": "integer",
+							"minimum": 0,
+							"maximum": 2
+						},
+						"keyboardType": {
+							"description": "Specify the kind of keyboard to display for the text field. Refer to [UIKeyboardType](https://developer.apple.com/documentation/uikit/uikeyboardtype) for possible values.",
+							"type": "integer",
+							"minimum": 0,
+							"maximum": 12
+						},
+						"returnKeyType": {
+							"description": "Specify the text string that displays in the Return key. Refer to [UIReturnKeyType](https://developer.apple.com/documentation/uikit/uireturnkeytype) for possible values.",
+							"type": "integer",
+							"minimum": 0,
+							"maximum": 12
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"buttonSettings": {
+			"type": "object",
+			"description": "A button that can be used to trigger an action. For this button to be useful, the setting should also have a `notification` key.",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_settingsBase"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"button"
+							]
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"linkSettings": {
+			"type": "object",
+			"description": "The link should be stored in the `key` property.",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_settingsBase"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"link"
+							]
+						},
+						"external": {
+							"description": "Marks a link as external (opens in Safari intead of in-app browser).",
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"segmentSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_selectableSettings"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"segment"
+							]
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"selectSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/_selectableSettings"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"select",
+								"multi-select"
+							]
+						},
+						"authToOpen": {
+							"description": "Requires Face ID/Touch ID authentication to open an options page.",
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"ungroupedSettings": {
+			"oneOf": [
+				{
+					"$ref": "#/definitions/switchSettings"
+				},
+				{
+					"$ref": "#/definitions/stepperSettings"
+				},
+				{
+					"$ref": "#/definitions/textSettings"
+				},
+				{
+					"$ref": "#/definitions/buttonSettings"
+				},
+				{
+					"$ref": "#/definitions/linkSettings"
+				},
+				{
+					"$ref": "#/definitions/segmentSettings"
+				},
+				{
+					"$ref": "#/definitions/selectSettings"
+				}
+			]
+		},
+		"groupSettings": {
 			"type": "object",
 			"properties": {
 				"type": {
 					"type": "string",
 					"enum": [
-						"group",
-						"select",
-						"multi-select",
-						"switch",
-						"stepper",
-						"segment",
-						"text",
-						"page",
-						"button",
-						"link"
+						"group"
 					]
-				},
-				"key": {
-					"type": "string"
-				},
-				"action": {
-					"type": "string"
 				},
 				"title": {
 					"type": "string"
 				},
-				"subtitle": {
-					"type": "string"
-				},
 				"footer": {
+					"description": "Text that will be placed at the end of the setting.",
 					"type": "string"
-				},
-				"placeholder": {
-					"type": "string"
-				},
-				"values": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					}
-				},
-				"titles": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					}
-				},
-				"default": {
-					"$ref": "#/definitions/any"
-				},
-				"notification": {
-					"type": "string"
-				},
-				"requires": {
-					"type": "string"
-				},
-				"requiresFalse": {
-					"type": "string"
-				},
-				"minimumValue": {
-					"type": "number"
-				},
-				"maximumValue": {
-					"type": "number"
-				},
-				"destructive": {
-					"type": "boolean"
-				},
-				"external": {
-					"type": "boolean"
 				},
 				"items": {
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/settings"
+						"$ref": "#/definitions/ungroupedSettings"
 					}
-				},
-				"autocapitalizationType": {
-					"type": "integer"
-				},
-				"autocorrectionType": {
-					"type": "integer"
-				},
-				"spellCheckingType": {
-					"type": "integer"
-				},
-				"keyboardType": {
-					"type": "integer"
-				},
-				"returnKeyType": {
-					"type": "integer"
 				}
 			},
 			"required": [
-				"type"
+				"type",
+				"items"
+			]
+		},
+		"settings": {
+			"oneOf": [
+				{
+					"$ref": "#/definitions/groupSettings"
+				},
+				{
+					"$ref": "#/definitions/ungroupedSettings"
+				}
 			]
 		}
 	},
