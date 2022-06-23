@@ -368,7 +368,8 @@
 						"type": {
 							"type": "string",
 							"enum": [
-								"multi-select"
+								"multi-select",
+								"multi-single-select"
 							]
 						},
 						"default": {
