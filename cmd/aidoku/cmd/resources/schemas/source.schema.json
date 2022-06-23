@@ -51,11 +51,11 @@
 				},
 				"minAppVersion": {
 					"type": "string",
-					"pattern": "\\d+\\.\\d+"
+					"pattern": "(\\d\\.){2}\\d"
 				},
 				"maxAppVersion": {
 					"type": "string",
-					"pattern": "\\d+\\.\\d+"
+					"pattern": "(\\d\\.){2}\\d"
 				}
 			},
 			"required": [
