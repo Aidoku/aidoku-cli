@@ -49,10 +49,6 @@
 					"description": "A notification to be posted whenever the value for this setting changes.",
 					"type": "string"
 				},
-				"footer": {
-					"description": "Text that will be placed at the end of the setting.",
-					"type": "string"
-				},
 				"default": {
 					"description": "The default value for this setting.",
 					"$ref": "#/definitions/any"
