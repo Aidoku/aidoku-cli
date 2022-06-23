@@ -30,7 +30,7 @@
 				}
 			]
 		},
-		"_settingsBase": {
+		"settingsBase": {
 			"type": "object",
 			"properties": {
 				"key": {
@@ -64,21 +64,35 @@
 				"requiresFalse": {
 					"description": "Require that another setting be disabled before this one can be modified.",
 					"type": "string"
-				},
-				"destructive": {
-					"description": "Marks an action as destructive.",
-					"type": "boolean"
 				}
 			},
 			"required": [
 				"key"
 			]
 		},
-		"_selectableSettings": {
+		"destructableSettings": {
+			"type": "object",
+			"properties": {
+				"destructive": {
+					"description": "Marks an action as destructive.",
+					"type": "boolean"
+				}
+			}
+		},
+		"authToOpenSettings": {
+			"type": "object",
+			"properties": {
+				"authToOpen": {
+					"description": "Requires Face ID/Touch ID authentication to open an options page.",
+					"type": "boolean"
+				}
+			}
+		},
+		"selectableSettings": {
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_settingsBase"
+					"$ref": "#/definitions/settingsBase"
 				},
 				{
 					"type": "object",
@@ -105,7 +119,7 @@
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_settingsBase"
+					"$ref": "#/definitions/settingsBase"
 				},
 				{
 					"properties": {
@@ -138,7 +152,7 @@
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_settingsBase"
+					"$ref": "#/definitions/settingsBase"
 				},
 				{
 					"type": "object",
@@ -156,6 +170,10 @@
 						"maximumValue": {
 							"description": "Maximum value for the stepper.",
 							"type": "number"
+						},
+						"default": {
+							"description": "The default value for this setting.",
+							"type": "string"
 						}
 					},
 					"required": [
@@ -168,7 +186,7 @@
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_settingsBase"
+					"$ref": "#/definitions/settingsBase"
 				},
 				{
 					"type": "object",
@@ -212,6 +230,10 @@
 							"type": "integer",
 							"minimum": 0,
 							"maximum": 12
+						},
+						"default": {
+							"description": "The default value for this setting.",
+							"type": "string"
 						}
 					},
 					"required": [
@@ -225,7 +247,10 @@
 			"description": "A button that can be used to trigger an action. For this button to be useful, the setting should also have a `notification` key.",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_settingsBase"
+					"$ref": "#/definitions/settingsBase"
+				},
+				{
+					"$ref": "#/definitions/destructableSettings"
 				},
 				{
 					"type": "object",
@@ -248,7 +273,10 @@
 			"description": "The link should be stored in the `key` property.",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_settingsBase"
+					"$ref": "#/definitions/settingsBase"
+				},
+				{
+					"$ref": "#/definitions/destructableSettings"
 				},
 				{
 					"type": "object",
@@ -274,7 +302,7 @@
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_selectableSettings"
+					"$ref": "#/definitions/selectableSettings"
 				},
 				{
 					"type": "object",
@@ -284,6 +312,10 @@
 							"enum": [
 								"segment"
 							]
+						},
+						"default": {
+							"description": "The default value for this setting.",
+							"type": "string"
 						}
 					},
 					"required": [
@@ -296,7 +328,10 @@
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/_selectableSettings"
+					"$ref": "#/definitions/selectableSettings"
+				},
+				{
+					"$ref": "#/definitions/authToOpenSettings"
 				},
 				{
 					"type": "object",
@@ -304,13 +339,44 @@
 						"type": {
 							"type": "string",
 							"enum": [
-								"select",
+								"select"
+							]
+						},
+						"default": {
+							"description": "The default value for this setting.",
+							"type": "string"
+						}
+					},
+					"required": [
+						"type"
+					]
+				}
+			]
+		},
+		"multiSelectSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/selectableSettings"
+				},
+				{
+					"$ref": "#/definitions/authToOpenSettings"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
 								"multi-select"
 							]
 						},
-						"authToOpen": {
-							"description": "Requires Face ID/Touch ID authentication to open an options page.",
-							"type": "boolean"
+						"default": {
+							"description": "The default value for this setting.",
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
 						}
 					},
 					"required": [
@@ -341,6 +407,9 @@
 				},
 				{
 					"$ref": "#/definitions/selectSettings"
+				},
+				{
+					"$ref": "#/definitions/multiSelectSettings"
 				}
 			]
 		},
