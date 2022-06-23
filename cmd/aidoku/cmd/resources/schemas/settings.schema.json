@@ -67,7 +67,8 @@
 				}
 			},
 			"required": [
-				"key"
+				"key",
+				"title"
 			]
 		},
 		"destructableSettings": {
