@@ -257,6 +257,10 @@
 							"enum": [
 								"button"
 							]
+						},
+						"action": {
+							"description": "Notification that will be emitted when the button is pressed.",
+							"type": "string"
 						}
 					},
 					"required": [
