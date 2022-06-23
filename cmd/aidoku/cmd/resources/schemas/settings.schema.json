@@ -30,43 +30,6 @@
 				}
 			]
 		},
-		"settingsBase": {
-			"type": "object",
-			"properties": {
-				"key": {
-					"description": "The defaults key to access the setting with.",
-					"type": "string"
-				},
-				"title": {
-					"description": "Setting name, as displayed to users.",
-					"type": "string"
-				},
-				"subtitle": {
-					"description": "Setting subtitle, displayed as smaller gray text under the title.",
-					"type": "string"
-				},
-				"notification": {
-					"description": "A notification to be posted whenever the value for this setting changes.",
-					"type": "string"
-				},
-				"default": {
-					"description": "The default value for this setting.",
-					"$ref": "#/definitions/any"
-				},
-				"requires": {
-					"description": "Require that another setting be enabled before this one can be modified.",
-					"type": "string"
-				},
-				"requiresFalse": {
-					"description": "Require that another setting be disabled before this one can be modified.",
-					"type": "string"
-				}
-			},
-			"required": [
-				"key",
-				"title"
-			]
-		},
 		"destructableSettings": {
 			"type": "object",
 			"properties": {
@@ -85,11 +48,36 @@
 				}
 			}
 		},
+		"requirableSettings": {
+			"type": "object",
+			"properties": {
+				"requires": {
+					"description": "Require that another setting be enabled before this one can be modified.",
+					"type": "string"
+				},
+				"requiresFalse": {
+					"description": "Require that another setting be disabled before this one can be modified.",
+					"type": "string"
+				}
+			}
+		},
+		"titleableSettings": {
+			"type": "object",
+			"properties": {
+				"title": {
+					"description": "The title of the setting.",
+					"type": "string"
+				}
+			},
+			"required": [
+				"title"
+			]
+		},
 		"selectableSettings": {
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/settingsBase"
+					"$ref": "#/definitions/settingItemBase"
 				},
 				{
 					"type": "object",
@@ -112,11 +100,42 @@
 				}
 			]
 		},
+		"settingItemBase": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/requirableSettings"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"key": {
+							"description": "The defaults key to access the setting with.",
+							"type": "string"
+						},
+						"notification": {
+							"description": "A notification to be posted whenever the value for this setting changes.",
+							"type": "string"
+						},
+						"default": {
+							"description": "The default value for this setting.",
+							"$ref": "#/definitions/any"
+						}
+					},
+					"required": [
+						"key"
+					]
+				}
+			]
+		},
 		"switchSettings": {
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/settingsBase"
+					"$ref": "#/definitions/settingItemBase"
+				},
+				{
+					"$ref": "#/definitions/titleableSettings"
 				},
 				{
 					"properties": {
@@ -125,6 +144,10 @@
 							"enum": [
 								"switch"
 							]
+						},
+						"subtitle": {
+							"description": "Setting subtitle, displayed as smaller gray text under the title.",
+							"type": "string"
 						},
 						"authToEnable": {
 							"description": "Requires Face ID/Touch ID authentication to enable a switch.",
@@ -149,7 +172,10 @@
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/settingsBase"
+					"$ref": "#/definitions/settingItemBase"
+				},
+				{
+					"$ref": "#/definitions/titleableSettings"
 				},
 				{
 					"type": "object",
@@ -183,7 +209,7 @@
 			"type": "object",
 			"allOf": [
 				{
-					"$ref": "#/definitions/settingsBase"
+					"$ref": "#/definitions/settingItemBase"
 				},
 				{
 					"type": "object",
@@ -244,10 +270,13 @@
 			"description": "A button that can be used to trigger an action. For this button to be useful, the setting should also have a `notification` key.",
 			"allOf": [
 				{
-					"$ref": "#/definitions/settingsBase"
+					"$ref": "#/definitions/settingItemBase"
 				},
 				{
 					"$ref": "#/definitions/destructableSettings"
+				},
+				{
+					"$ref": "#/definitions/titleableSettings"
 				},
 				{
 					"type": "object",
@@ -274,10 +303,13 @@
 			"description": "The link should be stored in the `key` property.",
 			"allOf": [
 				{
-					"$ref": "#/definitions/settingsBase"
+					"$ref": "#/definitions/settingItemBase"
 				},
 				{
 					"$ref": "#/definitions/destructableSettings"
+				},
+				{
+					"$ref": "#/definitions/titleableSettings"
 				},
 				{
 					"type": "object",
@@ -304,6 +336,9 @@
 			"allOf": [
 				{
 					"$ref": "#/definitions/selectableSettings"
+				},
+				{
+					"$ref": "#/definitions/titleableSettings"
 				},
 				{
 					"type": "object",
@@ -335,6 +370,9 @@
 					"$ref": "#/definitions/authToOpenSettings"
 				},
 				{
+					"$ref": "#/definitions/titleableSettings"
+				},
+				{
 					"type": "object",
 					"properties": {
 						"type": {
@@ -362,6 +400,9 @@
 				},
 				{
 					"$ref": "#/definitions/authToOpenSettings"
+				},
+				{
+					"$ref": "#/definitions/titleableSettings"
 				},
 				{
 					"type": "object",
@@ -415,32 +456,76 @@
 				}
 			]
 		},
+		"pageSettings": {
+			"type": "object",
+			"allOf": [
+				{
+					"$ref": "#/definitions/requirableSettings"
+				},
+				{
+					"$ref": "#/definitions/titleableSettings"
+				},
+				{
+					"type": "object",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"page"
+							]
+						},
+						"items": {
+							"type": "array",
+							"items": {
+								"anyOf": [
+									{
+										"$ref": "#/definitions/ungroupedSettings"
+									},
+									{
+										"$ref": "#/definitions/groupSettings"
+									}
+								]
+							}
+						}
+					},
+					"required": [
+						"type",
+						"items"
+					]
+				}
+			]
+		},
 		"groupSettings": {
 			"type": "object",
-			"properties": {
-				"type": {
-					"type": "string",
-					"enum": [
-						"group"
+			"allOf": [
+				{
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": [
+								"group"
+							]
+						},
+						"title": {
+							"description": "Header text of the group.",
+							"type": "string"
+						},
+						"footer": {
+							"description": "Footer text of the group.",
+							"type": "string"
+						},
+						"items": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/ungroupedSettings"
+							}
+						}
+					},
+					"required": [
+						"type",
+						"items"
 					]
-				},
-				"title": {
-					"type": "string"
-				},
-				"footer": {
-					"description": "Text that will be placed at the end of the setting.",
-					"type": "string"
-				},
-				"items": {
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/ungroupedSettings"
-					}
 				}
-			},
-			"required": [
-				"type",
-				"items"
 			]
 		},
 		"settings": {
