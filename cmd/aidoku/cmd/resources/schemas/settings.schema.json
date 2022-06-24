@@ -121,10 +121,7 @@
 							"description": "The default value for this setting.",
 							"$ref": "#/definitions/any"
 						}
-					},
-					"required": [
-						"key"
-					]
+					}
 				}
 			]
 		},
@@ -163,7 +160,8 @@
 						}
 					},
 					"required": [
-						"type"
+						"type",
+						"key"
 					]
 				}
 			]
@@ -200,7 +198,8 @@
 						}
 					},
 					"required": [
-						"type"
+						"type",
+						"key"
 					]
 				}
 			]
@@ -260,7 +259,8 @@
 						}
 					},
 					"required": [
-						"type"
+						"type",
+						"key"
 					]
 				}
 			]
@@ -320,13 +320,18 @@
 								"link"
 							]
 						},
+						"url": {
+							"description": "The URL to open.",
+							"type": "string"
+						},
 						"external": {
 							"description": "Marks a link as external (opens in Safari intead of in-app browser).",
 							"type": "boolean"
 						}
 					},
 					"required": [
-						"type"
+						"type",
+						"url"
 					]
 				}
 			]
@@ -355,7 +360,8 @@
 						}
 					},
 					"required": [
-						"type"
+						"type",
+						"key"
 					]
 				}
 			]
@@ -387,7 +393,8 @@
 						}
 					},
 					"required": [
-						"type"
+						"type",
+						"key"
 					]
 				}
 			]
@@ -423,7 +430,8 @@
 						}
 					},
 					"required": [
-						"type"
+						"type",
+						"key"
 					]
 				}
 			]
