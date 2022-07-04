@@ -5,14 +5,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
+	"sync"
 	"syscall"
 	"time"
 
 	"github.com/Aidoku/aidoku-cli/internal/build"
 	"github.com/Aidoku/aidoku-cli/internal/common"
+	"github.com/Aidoku/aidoku-cli/internal/watcher"
 	"github.com/fatih/color"
 	"github.com/felixge/httpsnoop"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/maps"
 )
 
 var (
@@ -42,8 +46,11 @@ var serveCmd = &cobra.Command{
 		address, _ := cmd.Flags().GetString("address")
 		output, _ := cmd.Flags().GetString("output")
 		port, _ := cmd.Flags().GetString("port")
+		watch, _ := cmd.Flags().GetBool("watch")
+		poll, _ := cmd.Flags().GetString("poll")
 
-		build.BuildWrapper(args, output)
+		files := common.ProcessGlobs(args)
+		build.BuildWrapper(files, output)
 
 		fmt.Println("Listening on these addresses:")
 		if address == "0.0.0.0" {
@@ -69,6 +76,58 @@ var serveCmd = &cobra.Command{
 				fmt.Printf("[%s] \"%s %s\" Error (%s): \"%s\"\n", timestamp, red(method), red(url), red(statusCode), red(http.StatusText(statusCode)))
 			}
 		})
+		if watch || len(poll) > 0 {
+			var pollInterval time.Duration
+			var err error
+			if len(poll) > 0 {
+				pollInterval, err = common.ToDurationE(poll)
+				if err != nil {
+					return fmt.Errorf("error: invalid value for --poll: %s", err)
+				}
+			}
+			watcher, err := watcher.New(500*time.Millisecond, pollInterval, len(poll) > 0)
+			if err != nil {
+				color.Red("error: couldn't create file watcher, not watching for changes: %s", err)
+			} else {
+				defer watcher.Close()
+				var buildLock sync.Mutex
+				go func() {
+					for {
+						select {
+						case events, ok := <-watcher.Events:
+							if !ok {
+								return
+							}
+							changed_map := make(map[string]string)
+							for _, event := range events {
+								if _, ok := changed_map[event.Name]; !ok {
+									changed_map[event.Name] = ""
+								}
+							}
+							changed := maps.Keys(changed_map)
+							if len(changed) > 0 {
+								color.HiBlack("File changed, rebuilding source list: %s", strings.Join(changed, ", "))
+								buildLock.Lock()
+								build.BuildWrapper(files, output)
+								buildLock.Unlock()
+							}
+						case err, ok := <-watcher.Errors():
+							if !ok {
+								return
+							}
+							color.Red("error: file watcher error: %s", err)
+						}
+					}
+				}()
+				for _, file := range files {
+					err = watcher.Add(file)
+					if err != nil {
+						color.Red("error: could not watch %s: %s", file, err)
+					}
+				}
+			}
+			fmt.Printf("Watching %d file(s) for changes\n", len(watcher.WatchList()))
+		}
 		return http.ListenAndServe(address+":"+port, wrappedHandler)
 	},
 }
@@ -78,6 +137,9 @@ func init() {
 	serveCmd.Flags().StringP("address", "a", "0.0.0.0", "Address to broadcast source list")
 	serveCmd.Flags().StringP("port", "p", "8080", "The port to broadcast the source list on")
 	serveCmd.Flags().StringP("output", "o", "public", "The source list folder")
+	serveCmd.Flags().BoolP("watch", "w", false, "Watch for file changes and rebuild source list as needed")
+	serveCmd.Flags().String("poll", "", "Watch for file changes with a poll-based approach")
+	serveCmd.Flags().Lookup("poll").NoOptDefVal = "500ms"
 
 	serveCmd.MarkZshCompPositionalArgumentFile(1, "*.aix")
 	serveCmd.ValidArgsFunction = func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

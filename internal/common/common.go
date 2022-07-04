@@ -9,9 +9,11 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/fatih/color"
+	"github.com/spf13/cast"
 )
 
 func CopyFileContents(src, dst string) (err error) {
@@ -109,4 +111,15 @@ func ProcessGlobs(globs []string) []string {
 		}
 	}
 	return fileList
+}
+
+func ToDurationE(v any) (time.Duration, error) {
+	if n := cast.ToInt(v); n > 0 {
+		return time.Duration(n) * time.Millisecond, nil
+	}
+	d, err := time.ParseDuration(cast.ToString(v))
+	if err != nil {
+		return 0, fmt.Errorf("cannot convert %v to time.Duration", v)
+	}
+	return d, nil
 }
