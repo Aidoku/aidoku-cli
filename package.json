@@ -1,0 +1,168 @@
+{
+	"name": "aidoku-extensions-website-2",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "wireit",
+		"preview": "vite preview",
+		"check": "wireit",
+		"lint": "wireit",
+		"fmt": "wireit"
+	},
+	"wireit": {
+		"build": {
+			"command": "vite build",
+			"clean": "if-file-deleted",
+			"files": [
+				"src/**",
+				"public/**",
+				"index.html",
+				"*.config.*",
+				"tsconfig.json",
+				"tsconfig.node.json",
+				"package.json"
+			],
+			"output": [
+				"dist/**"
+			],
+			"packageLocks": [
+				"pnpm-lock.yaml"
+			]
+		},
+		"check": {
+			"command": "svelte-check --tsconfig ./tsconfig.json",
+			"files": [
+				"./src/**/*.svelte",
+				"svelte.config.js"
+			],
+			"output": []
+		},
+		"lint": {
+			"command": "eslint --color --cache --cache-location node_modules/.cache/eslint/.eslintcache --ignore-path .gitignore .",
+			"files": [
+				"src/**",
+				".gitignore",
+				".eslintrc.cjs",
+				"*.config.*"
+			],
+			"output": []
+		},
+		"fmt": {
+			"command": "prettier --cache --ignore-path .gitignore --plugin=prettier-plugin-tailwindcss --write .",
+			"files": [
+				"src/**",
+				".gitignore",
+				".prettierrc.yaml",
+				"*.config.*",
+				"index.html",
+				"package.json",
+				"pnpm-lock.yaml",
+				"README.md",
+				"**.json",
+				"!node_modules/**"
+			],
+			"output": []
+		}
+	},
+	"eslintConfig": {
+		"root": true,
+		"parser": "@typescript-eslint/parser",
+		"extends": [
+			"eslint:recommended",
+			"plugin:@typescript-eslint/recommended"
+		],
+		"plugins": [
+			"svelte3",
+			"@typescript-eslint"
+		],
+		"ignorePatterns": [
+			"*.cjs"
+		],
+		"overrides": [
+			{
+				"files": [
+					"*.svelte"
+				],
+				"processor": "svelte3/svelte3"
+			}
+		],
+		"settings": {
+			"svelte3/typescript": true
+		},
+		"parserOptions": {
+			"sourceType": "module",
+			"ecmaVersion": 2020
+		},
+		"env": {
+			"browser": true,
+			"es2017": true,
+			"node": true
+		},
+		"rules": {
+			"@typescript-eslint/no-unused-vars": [
+				"warn",
+				{
+					"argsIgnorePattern": "^_",
+					"varsIgnorePattern": "^_",
+					"caughtErrorsIgnorePattern": "^_"
+				}
+			],
+			"no-mixed-spaces-and-tabs": [
+				"error",
+				"smart-tabs"
+			]
+		}
+	},
+	"postcss": {
+		"plugins": {
+			"tailwindcss": {},
+			"autoprefixer": {},
+			"cssnano": {}
+		}
+	},
+	"prettier": {
+		"useTabs": true,
+		"singleQuote": false,
+		"trailingComma": "es5",
+		"tailwindConfig": "tailwind.config.cjs",
+		"overrides": [
+			{
+				"files": [
+					"*.svelte"
+				],
+				"options": {
+					"bracketSameLine": false,
+					"svelteIndentScriptAndStyle": true
+				}
+			}
+		],
+		"plugins": [
+			"prettier-plugin-tailwindcss"
+		]
+	},
+	"devDependencies": {
+		"@sveltejs/vite-plugin-svelte": "~1.0.0-next.49",
+		"@tsconfig/svelte": "~3.0.0",
+		"@typescript-eslint/eslint-plugin": "~5.30.3",
+		"@typescript-eslint/parser": "~5.30.3",
+		"autoprefixer": "~10.4.7",
+		"cssnano": "~5.1.12",
+		"eslint": "~8.19.0",
+		"eslint-plugin-svelte3": "~4.0.0",
+		"postcss": "~8.4.14",
+		"prettier": "~2.7.1",
+		"prettier-plugin-tailwindcss": "~0.1.11",
+		"sass": "~1.53.0",
+		"svelte": "~3.48.0",
+		"svelte-check": "~2.2.12",
+		"svelte-multiselect": "~5.0.3",
+		"svelte-preprocess": "~4.9.8",
+		"tailwindcss": "~3.1.4",
+		"tslib": "~2.3.1",
+		"typescript": "~4.5.5",
+		"vite": "~2.9.13",
+		"wireit": "~0.7.1"
+	}
+}

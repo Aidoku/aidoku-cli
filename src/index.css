@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+	font-family: -apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif;
+}
+
+body {
+	overflow-y: scroll;
+}
