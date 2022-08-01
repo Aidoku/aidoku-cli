@@ -194,7 +194,7 @@
 						},
 						"default": {
 							"description": "The default value for this setting.",
-							"type": "string"
+							"type": "number"
 						}
 					},
 					"required": [
