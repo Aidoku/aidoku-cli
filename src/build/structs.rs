@@ -7,7 +7,7 @@ pub struct SourceInfo {
 	pub name: String,
 	pub lang: String,
 	pub version: usize,
-	pub nsfw: usize,
+	pub nsfw: Option<usize>,
 
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub min_app_version: Option<String>,
@@ -43,7 +43,7 @@ impl From<SourceInfo> for ExternalSourceInfo {
 			name: src.name,
 			lang: src.lang,
 			version: src.version,
-			nsfw: src.nsfw,
+			nsfw: src.nsfw.unwrap_or(0),
 			min_app_version: src.min_app_version,
 			max_app_version: src.max_app_version,
 		}

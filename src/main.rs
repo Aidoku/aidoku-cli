@@ -11,6 +11,8 @@ use std::{
 };
 use warp::Filter;
 
+pub static PLACEHOLDER_PNG: &[u8] = include_bytes!("./res/1x1-000000ff.png");
+
 #[derive(Debug, Clone, Parser)]
 struct Cli {
 	#[clap(flatten)]

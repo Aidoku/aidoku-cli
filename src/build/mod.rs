@@ -1,3 +1,7 @@
+mod structs;
+use structs::{ExternalSourceInfo, Source};
+use crate::PLACEHOLDER_PNG;
+
 use anyhow::{anyhow, Result};
 use log::{debug, warn};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
@@ -8,11 +12,6 @@ use std::{
 	path::PathBuf,
 	sync::{Arc, RwLock},
 };
-
-mod structs;
-use structs::*;
-
-static PLACEHOLDER_PNG: &[u8] = include_bytes!("./1x1-000000ff.png");
 
 pub fn build(files: Vec<PathBuf>, output: PathBuf) -> Result<()> {
 	if output.exists() {
