@@ -8,7 +8,7 @@ brew install beerpiss/tap/aidoku
 
 # Windows
 scoop bucket add beerpiss https://github.com/beerpiss/scoop-bucket
-scoop install beerpiss/aidoku
+scoop install beerpiss/aidoku-cli
 
 # if you have golang installed
 go install github.com/Aidoku/aidoku-cli/...@latest
