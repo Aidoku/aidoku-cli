@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 
@@ -143,6 +144,10 @@ func BuildSource(zipFiles []string, output string) error {
 		}(file)
 	}
 	wg.Wait()
+
+	sort.Slice(sourceList.data, func(i, j int) bool {
+		return sourceList.data[i].Id < sourceList.data[j].Id
+	})
 
 	b, err := json.Marshal(sourceList.data)
 	if err != nil {
