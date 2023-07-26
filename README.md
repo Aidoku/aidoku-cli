@@ -82,11 +82,14 @@ Usage:
   aidoku build <FILES> [flags]
 
 Flags:
-  -h, --help            help for build
-  -o, --output string   Output folder (default "public")
+  -h, --help               help for build
+  -o, --output string      Output folder (default "public")
+  -w, --web                Generate a landing page for the source list
+      --web-title string   Title of the landing page (default "An Aidoku source list")
 
 Global Flags:
-  -v, --verbose   verbose output
+      --force-color   always output with color
+  -v, --verbose       verbose output
 ```
 
 ## `aidoku serve <FILES>`
