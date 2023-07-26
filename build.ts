@@ -6,7 +6,7 @@ const doc = new DOMParser().parseFromString(html, "text/html")!;
 
 for (const script of doc.querySelectorAll("script")) {
     const source = script.getAttribute("src");
-    if (!source || source.startsWith("http") || source.startsWith("//") || script.getAttribute("async")) {
+    if (!source || source.startsWith("http") || source.startsWith("//")) {
         continue;
     }
 

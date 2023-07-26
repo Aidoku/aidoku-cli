@@ -13,7 +13,6 @@
     />
     <link rel="stylesheet" href="styles/index.css" />
 
-    <script async src="scripts/elements.js"></script>
     <script
       async
       type="module"
@@ -21,8 +20,6 @@
       integrity="sha384-ILzDiPYY4je5i95gGzpVe0e88rFqVnoz3i7HPBsRbtEHxfkA7wR8E+PwjCgt1Bin"
       crossorigin="anonymous"
     ></script>
-
-    <script defer src="scripts/index.js"></script>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.3/dist/cdn.min.js"
@@ -64,8 +61,7 @@
       </template>
       <template x-if="loading === LoadingStatus.Error">
         <div class="sources__status">
-          <p>Could not load sources.</p>
-          <p>This source list might not work in the app.</p>
+          Could not load sources. This source list might not work in the app.
         </div>
       </template>
       <template x-if="loading === LoadingStatus.Loaded">
@@ -145,5 +141,7 @@
         </div>
       </template>
     </div>
+  <script src="scripts/elements.js"></script>
+  <script src="scripts/index.js"></script>
   </body>
 </html>
