@@ -16,5 +16,5 @@ strip = true
 lto = true
 {{ end }}
 [dependencies]
-aidoku = { git = "https://github.com/Aidoku/aidoku-rs" }{{ if not (eq (len .TemplateName) 0) }}
+aidoku = { git = "https://github.com/Aidoku/aidoku-rs", features = ["helpers"] }{{ if not (eq (len .TemplateName) 0) }}
 {{ .TemplateName }} = { path = "../../template" }{{ end }}

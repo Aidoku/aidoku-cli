@@ -1,10 +1,9 @@
 #![no_std]
-{{ if eq (len .TemplateName) 0 }}
-mod helper;{{ end }}
 use aidoku::{
 	error::Result,
 	prelude::*,
 	std::{String, Vec, net::Request},
+	helpers,
 	Chapter, Filter, Listing, Manga, MangaPageResult, Page, DeepLink
 };
 

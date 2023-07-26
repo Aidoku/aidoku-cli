@@ -22,7 +22,6 @@ func RustGenerator(output string, source Source) error {
 		files["/.cargo/config"] = templateFactory(box, "rust/.cargo/config.tmpl")
 		files["/build.sh"] = templateFactory(box, "rust/build.sh.tmpl")
 		files["/build.ps1"] = templateFactory(box, "rust/build.ps1.tmpl")
-		files["/src/helper.rs"] = templateFactory(box, "rust/src/helper.rs.tmpl")
 	}
 	// Make the build script executable
 	err = GenerateFilesFromMap(output, source, files)

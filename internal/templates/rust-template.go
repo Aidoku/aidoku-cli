@@ -25,7 +25,6 @@ func RustTemplateGenerator(output string, source Source) error {
 		"/.cargo/config":            templateFactory(box, "rust/.cargo/config.tmpl"),
 		"/template/Cargo.toml":      templateFactory(box, "rust-template/template/Cargo.toml.tmpl"),
 		"/template/src/lib.rs":      templateFactory(box, "rust-template/template/src/lib.rs.tmpl"),
-		"/template/src/helper.rs":   templateFactory(box, "rust/src/helper.rs.tmpl"),
 		"/template/src/template.rs": templateFactory(box, "rust-template/template/src/template.rs.tmpl"),
 	}
 	// Make the build script executable
