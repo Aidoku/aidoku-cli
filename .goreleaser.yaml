@@ -25,7 +25,7 @@ builds:
       - -trimpath
     hooks:
       post:
-      - rice append -i ./cmd/aidoku/cmd -i ./internal/templates --exec "{{ .Path }}"
+      - rice append -i ./cmd/aidoku/cmd -i ./internal/templates -i ./internal/build --exec "{{ .Path }}"
     ldflags: | 
       -s -w
       -X github.com/Aidoku/aidoku-cli/cmd/aidoku/cmd.version={{.Version}} 

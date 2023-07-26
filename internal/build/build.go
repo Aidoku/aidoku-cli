@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
 	"io"
 	"os"
 	"sort"
@@ -12,6 +13,7 @@ import (
 	"sync"
 
 	"github.com/Aidoku/aidoku-cli/internal/common"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/fatih/color"
 	"github.com/segmentio/fasthash/fnv1a"
 	"github.com/valyala/fastjson"
@@ -29,7 +31,11 @@ type source struct {
 	MaxVersion string `json:"maxAppVersion,omitempty"`
 }
 
-func BuildWrapper(zipPatterns []string, output string) error {
+type WebTemplateArguments struct {
+	Title string
+}
+
+func BuildWrapper(zipPatterns []string, output string, web bool, webTitle string) error {
 	os.RemoveAll(output)
 	fileList := common.ProcessGlobs(zipPatterns)
 	if len(fileList) == 0 {
@@ -42,7 +48,68 @@ func BuildWrapper(zipPatterns []string, output string) error {
 	}
 	os.MkdirAll(output+"/icons", os.FileMode(0777))
 	os.MkdirAll(output+"/sources", os.FileMode(0777))
-	return BuildSource(fileList, output)
+
+	err = BuildSource(fileList, output)
+	if err != nil {
+		return err
+	}
+
+	if web {
+		err = BuildWeb(webTitle, output)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func BuildWeb(webTitle string, output string) error {
+	box := rice.MustFindBox("web")
+
+	bytes := box.MustBytes("index.html.tmpl")
+
+	tmpl, err := template.New("index").Parse(string(bytes))
+	if err != nil {
+		return err
+	}
+
+	args := WebTemplateArguments{
+		Title: webTitle,
+	}
+
+	file, err := os.Create(output + "/index.html")
+	if err != nil {
+		return err
+	}
+
+	err = tmpl.Execute(file, args)
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll(output+"/scripts", os.FileMode(0777))
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(output+"/styles", os.FileMode(0777))
+	if err != nil {
+		return err
+	}
+
+	files := []string{"scripts/elements.js", "scripts/index.js", "styles/index.css"}
+	for _, file := range files {
+		bytes := box.MustBytes(file)
+		file, err := os.Create(output + "/" + file)
+		if err != nil {
+			return err
+		}
+		file.Write(bytes)
+		file.Sync()
+		file.Close()
+	}
+
+	return nil
 }
 
 func BuildSource(zipFiles []string, output string) error {

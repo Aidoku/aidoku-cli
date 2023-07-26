@@ -43,7 +43,7 @@ var serveCmd = &cobra.Command{
 		output, _ := cmd.Flags().GetString("output")
 		port, _ := cmd.Flags().GetString("port")
 
-		build.BuildWrapper(args, output)
+		build.BuildWrapper(args, output, false, "")
 
 		fmt.Println("Listening on these addresses:")
 		if address == "0.0.0.0" {
