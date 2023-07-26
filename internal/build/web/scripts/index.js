@@ -76,18 +76,18 @@
         
                         const [langLhs] = languageName(lhs.lang);
                         const [langRhs] = languageName(rhs.lang);
-                        if (langLhs < langRhs) {
-                            return -1;
-                        }
-                        if (langRhs > langLhs) {
-                            return 1;
-                        }
-                        return lhs.name < rhs.name ? -1 : lhs.name === rhs.name ? 0 : 1;
+                        return langLhs.localeCompare(langRhs) || lhs.name.localeCompare(rhs.name);
                     });
                     this.languages = [...new Set(this.sources.map((source) => source.lang))];
                     this.loading = LoadingStatus.Loaded;
                 } catch {
                     this.loading = LoadingStatus.Error;
+                }
+
+                if (scope.location.hash) {
+                    this.$nextTick(() => { 
+                        scope.location.replace(scope.location.hash);
+                    });
                 }
             },
 
