@@ -32,10 +32,12 @@ type source struct {
 }
 
 type WebTemplateArguments struct {
-	Title string
+	Title       string
+	Description string
+	Icon        string
 }
 
-func BuildWrapper(zipPatterns []string, output string, web bool, webTitle string) error {
+func BuildWrapper(zipPatterns []string, output string, web bool, webArgs WebTemplateArguments) error {
 	os.RemoveAll(output)
 	fileList := common.ProcessGlobs(zipPatterns)
 	if len(fileList) == 0 {
@@ -55,7 +57,7 @@ func BuildWrapper(zipPatterns []string, output string, web bool, webTitle string
 	}
 
 	if web {
-		err = BuildWeb(webTitle, output)
+		err = BuildWeb(webArgs, output)
 		if err != nil {
 			return err
 		}
@@ -64,7 +66,7 @@ func BuildWrapper(zipPatterns []string, output string, web bool, webTitle string
 	return nil
 }
 
-func BuildWeb(webTitle string, output string) error {
+func BuildWeb(args WebTemplateArguments, output string) error {
 	box := rice.MustFindBox("web")
 
 	bytes := box.MustBytes("index.html.tmpl")
@@ -72,10 +74,6 @@ func BuildWeb(webTitle string, output string) error {
 	tmpl, err := template.New("index").Parse(string(bytes))
 	if err != nil {
 		return err
-	}
-
-	args := WebTemplateArguments{
-		Title: webTitle,
 	}
 
 	file, err := os.Create(output + "/index.html")
