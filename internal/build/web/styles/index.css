@@ -32,6 +32,19 @@ body {
     opacity: 0;
 }
 
+@media only screen and (max-width: 767px) {
+    body {
+        max-width: 22rem;
+    }
+}
+
+@media only screen and (max-width: 376px) {
+    body {
+        max-width: 20rem;
+    }
+}
+
+
 body.ready {
     opacity: 1;
 }
@@ -59,7 +72,6 @@ header p {
 }
 
 .description {
-    width: 91.6667%;
     margin: auto 2rem;
 }
 
