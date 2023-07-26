@@ -29,7 +29,10 @@
 body {
     margin: 0.75rem auto;
     max-width: 42rem;
-    opacity: 0;
+}
+
+:not(:defined) {
+    visibility: hidden;
 }
 
 @media only screen and (max-width: 767px) {
@@ -42,11 +45,6 @@ body {
     body {
         max-width: 20rem;
     }
-}
-
-
-body.ready {
-    opacity: 1;
 }
 
 header {
@@ -134,6 +132,12 @@ header p {
     align-items: center;
 
     padding: 0.5rem 0.5rem;
+}
+
+.sources__item:target {
+    background-color: rgba(255, 55, 95, 0.25);
+    border-radius: 0.5rem;
+    transition: background-color .5s;
 }
 
 @media (min-width: 1024px) {

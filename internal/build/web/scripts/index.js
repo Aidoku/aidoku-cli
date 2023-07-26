@@ -84,11 +84,9 @@
                     this.loading = LoadingStatus.Error;
                 }
 
-                if (w.location.hash) {
-                    this.$nextTick(() => { 
-                        w.location.replace(w.location.hash);
-                    });
-                }
+                this.$nextTick(() => {
+                    window.location.hash && window.location.replace(window.location.hash);
+                });
             },
 
             updateFilteredList() {
