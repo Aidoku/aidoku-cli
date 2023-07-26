@@ -1,4 +1,4 @@
-(function (scope) {
+(function (w) {
     const namesInEnglish = new Intl.DisplayNames(["en"], { type: "language" });
 
     /**
@@ -7,7 +7,7 @@
      * @returns {[string, string]}
      */
     function languageName(code) {
-        if (code == "multi") {
+        if (code === "multi") {
             return ["Multi-Language", ""];
         } else {
             const namesInNative = new Intl.DisplayNames([code], { type: "language" });
@@ -39,8 +39,8 @@
     };
 
     document.addEventListener("alpine:init", () => {
-        Alpine.store("sourceUrl", window.location.href.replace(window.location.hash, ""))
-        Alpine.store("addUrl", `aidoku://addSourceList?url=${window.location.href.replace(window.location.hash, "")}`)
+        Alpine.store("sourceUrl", w.location.href.replace(w.location.hash, ""))
+        Alpine.store("addUrl", `aidoku://addSourceList?url=${w.location.href.replace(w.location.hash, "")}`)
 
         Alpine.data("sourceList", () => ({
             sources: [],
@@ -84,9 +84,9 @@
                     this.loading = LoadingStatus.Error;
                 }
 
-                if (scope.location.hash) {
+                if (w.location.hash) {
                     this.$nextTick(() => { 
-                        scope.location.replace(scope.location.hash);
+                        w.location.replace(w.location.hash);
                     });
                 }
             },
