@@ -87,28 +87,6 @@ func BuildWeb(webTitle string, output string) error {
 	if err != nil {
 		return err
 	}
-
-	err = os.MkdirAll(output+"/scripts", os.FileMode(0777))
-	if err != nil {
-		return err
-	}
-	err = os.MkdirAll(output+"/styles", os.FileMode(0777))
-	if err != nil {
-		return err
-	}
-
-	files := []string{"scripts/elements.js", "scripts/index.js", "styles/index.css"}
-	for _, file := range files {
-		bytes := box.MustBytes(file)
-		file, err := os.Create(output + "/" + file)
-		if err != nil {
-			return err
-		}
-		file.Write(bytes)
-		file.Sync()
-		file.Close()
-	}
-
 	return nil
 }
 
