@@ -1,13 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="icon" size="32x32" href="/favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>An Aidoku source list</title>
-	</head>
-	<body>
-		<div id="app"></div>
-		<script type="module" src="/src/main.ts"></script>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>An Aidoku source list</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.5.2/cdn/themes/light.css"
+      integrity="sha384-0usmJJJTG5wZwRFlxdECle5gNAqtRYVm8rHBHjGO0+Cpgp83KTGEANVIFUYafjaO"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="styles/index.css" />
+
+    <script async src="scripts/elements.js"></script>
+    <script
+      async
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.5.2/cdn/shoelace-autoloader.js"
+      integrity="sha384-ILzDiPYY4je5i95gGzpVe0e88rFqVnoz3i7HPBsRbtEHxfkA7wR8E+PwjCgt1Bin"
+      crossorigin="anonymous"
+    ></script>
+
+    <script defer src="scripts/index.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.3/dist/cdn.min.js"
+      integrity="sha384-mPO6U7t0sNHfI1UIWNf5U6FDzprqWgAMKfOGW86JVGCKoU/7HPdy6DwBaWOsi4eV"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <header>
+      <p>An Aidoku source list</p>
+      <sl-button class="add-to-aidoku" x-data :href="$store.addUrl"
+        >Add to Aidoku</sl-button
+      >
+    </header>
+    <div class="description">
+      On a device with Aidoku installed, tap
+      <a x-data :href="$store.addUrl">Add to Aidoku</a>
+      or use the base URL to add this source list.
+    </div>
+    <div class="base-url" variant="primary">
+      <p class="base-url__description">Base URL:</p>
+      <p class="base-url__url" x-data x-text="$store.sourceUrl"></p>
+    </div>
+    <div class="sources" x-data="sourceList">
+      <h1>Sources</h1>
+      <template x-if="loading === LoadingStatus.Loading">
+        <div class="sources__status">
+          <div aria-label="Loading" class="spinner">
+            <div class="bar0"></div>
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="bar4"></div>
+            <div class="bar5"></div>
+            <div class="bar6"></div>
+            <div class="bar7"></div>
+          </div>
+        </div>
+      </template>
+      <template x-if="loading === LoadingStatus.Error">
+        <div class="sources__status">
+          <p>Could not load sources.</p>
+          <p>This source list might not work in the app.</p>
+        </div>
+      </template>
+      <template x-if="loading === LoadingStatus.Loaded">
+        <div>
+          <div class="sources__search" x-effect="updateFilteredList">
+            <sl-input
+              placeholder="Search by name or ID..."
+              x-model="query"
+            ></sl-input>
+            <sl-select
+              multiple
+              clearable
+              placeholder="Filter by languages"
+              @sl-change="selectedLanguages = event.target.value"
+            >
+              <template x-for="(language, index) in languages" :key="language">
+                <sl-option
+                  :value="language"
+                  x-text="languageName(language)"
+                ></sl-option>
+              </template>
+            </sl-select>
+            <sl-checkbox
+              @sl-change="nsfw = event.target.checked"
+              :checked="nsfw"
+            >
+              Show NSFW sources?
+            </sl-checkbox>
+          </div>
+          <div class="sources__list">
+            <template x-for="source in filtered" :key="source.id">
+              <div class="sources__item" :id="source.id">
+                <a :href="`#${source.id}`" class="sources__anchor">#</a>
+                <div class="sources__icon-wrapper">
+                  <img
+                    class="sources__icon"
+                    :alt="`Icon for ${source.name}`"
+                    :src="`./icons/${source.icon}`"
+                    loading="lazy"
+                    width="42"
+                    height="42"
+                  />
+                </div>
+                <div class="sources__info">
+                  <div class="sources__name">
+                    <span x-text="source.name"></span>
+                    <span
+                      class="sources__version"
+                      x-text="`v${source.version}`"
+                    ></span>
+                    <sl-badge
+                      pill
+                      x-cloak
+                      variant="danger"
+                      x-show="source.nsfw === 2"
+                      >18+</sl-badge
+                    >
+                  </div>
+                  <div
+                    class="sources__version"
+                    x-text="simpleLanguageName(source.lang)"
+                  ></div>
+                </div>
+                <div class="sources__download">
+                  <sl-button
+                    pill
+                    size="small"
+                    download
+                    :href="`./sources/${source.file}`"
+                  >
+                    Download
+                  </sl-button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+  </body>
 </html>

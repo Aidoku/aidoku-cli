@@ -1,6 +1,5 @@
 # source list website
 
 ```sh
-npm install
-npm dev
+deno run -A build.ts
 ```
