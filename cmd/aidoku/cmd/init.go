@@ -130,10 +130,6 @@ var initCommand = &cobra.Command{
 				}
 				err = templates.RustGenerator(args[1], source)
 			}
-		case "as":
-			err = templates.AscGenerator(args[1], source)
-		case "c":
-			err = templates.ClangGenerator(args[1], source)
 		case "rust-template":
 			err = templates.RustTemplateGenerator(args[1], source)
 		}
