@@ -125,6 +125,11 @@ body {
             margin-bottom: 0.25rem;
         }
     }
+
+    &__content-rating::part(control--checked) {
+        border-color: $aidoku-color;
+        background-color: $aidoku-color;
+    }
 }
 
 .source {
@@ -199,8 +204,10 @@ body {
 .content-rating {
     &::part(base) {
         color: $secondary-label;
-        padding: 0.16rem 0.26rem;
+        padding: 0.2rem 0.26rem;
         font-size: 0.7rem;
+        width: 1.77rem;
+        height: 1.18rem;
         border-radius: 0.375rem;
     }
 

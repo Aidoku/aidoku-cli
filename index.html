@@ -72,6 +72,13 @@
       <template x-if="loading === LoadingStatus.Loaded">
         <div>
           <div class="source-search" x-effect="updateFilteredList">
+            <sl-checkbox
+              class="source-search__content-rating"
+              @sl-change="nsfw = event.target.checked"
+              :checked="nsfw"
+            >
+              Show NSFW sources
+            </sl-checkbox>
             <sl-input
               class="source-search__title"
               placeholder="Search by name or ID..."
@@ -91,13 +98,6 @@
                 ></sl-option>
               </template>
             </sl-select>
-            <sl-checkbox
-              class="source-search__content-rating"
-              @sl-change="nsfw = event.target.checked"
-              :checked="nsfw"
-            >
-              Show NSFW sources?
-            </sl-checkbox>
           </div>
           <template x-for="source in filtered" :key="source.id">
             <div class="source" :id="source.id">
@@ -117,24 +117,25 @@
                     class="source__version"
                     x-text="`v${source.version}`"
                   ></span>
-                  <!-- <sl-badge
-                    pill
+                  <!--<sl-tag
                     x-cloak
+                    size="small"
                     variant="warning"
                     class="content-rating content-rating--suggestive"
                     x-show="source.nsfw === 1">
                     16+
-                  </sl-badge> -->
-                  <sl-badge
+                  </sl-tag>-->
+                  <sl-tag
                     x-cloak
+                    size="small"
                     variant="danger"
                     class="content-rating content-rating--nsfw"
                     x-show="source.nsfw === 2">
                     18+
-                  </sl-badge>
+                  </sl-tag>
                 </div>
                 <div
-                  class="sources__version"
+                  class="source__version"
                   x-text="simpleLanguageName(source.lang)"
                 ></div>
               </div>
@@ -152,7 +153,7 @@
         </div>
       </template>
     </div>
-  <link rel="stylesheet" href="styles/index.scss" />
+  <link rel="stylesheet" href="styles/index.css" />
   <script src="scripts/elements.js"></script>
   <script src="scripts/index.js"></script>
   </body>
