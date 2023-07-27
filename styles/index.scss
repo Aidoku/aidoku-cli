@@ -50,6 +50,7 @@ body {
 .add-to-aidoku {
     &::part(base) {
         background: change-color($aidoku-color, $alpha: 0.06);
+        border: none;
 
         &:hover {
             background: change-color($aidoku-color, $alpha: 0.08);
