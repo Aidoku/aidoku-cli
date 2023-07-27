@@ -1,5 +1,6 @@
 import { DOMParser } from "https://esm.sh/linkedom";
 import { minify } from "https://esm.sh/html-minifier-terser@7.2.0";
+import sass from "https://deno.land/x/denosass@1.0.6/mod.ts";
 
 const html = await Deno.readTextFile("./index.html");
 const doc = new DOMParser().parseFromString(html, "text/html")!;
@@ -21,7 +22,12 @@ for (const stylesheet of doc.querySelectorAll("link[rel=stylesheet]")) {
         continue;
     }
 
-    const css = Deno.readTextFileSync(source);
+    let css = Deno.readTextFileSync(source);
+    if (source.endsWith("scss")) {
+        const compiler = sass(css);
+        css = compiler.to_string("compressed");
+    }
+
     const styleElement = doc.createElement("style");
     styleElement.textContent = css;
     stylesheet.replaceWith(styleElement);

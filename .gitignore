@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .wireit
 public
+styles/*.css
+styles/*.css.map
