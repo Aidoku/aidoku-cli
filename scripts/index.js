@@ -38,6 +38,12 @@
     Error: "error",
   };
 
+  const NsfwOption = {
+    All: "all",
+    Safe: "safe",
+    Nsfw: "nsfw",
+  };
+
   document.addEventListener("alpine:init", () => {
     Alpine.store(
       "sourceUrl",
@@ -51,8 +57,29 @@
       )}`
     );
 
+    Alpine.bind("TriStateCheckbox", () => ({
+      indeterminate: true,
+
+      '@click'() {
+        const event = this.$event;
+        event.preventDefault();
+
+        if (event.target.indeterminate) {
+          event.target.checked = true;
+          event.target.indeterminate = false;
+        } else if (event.target.checked) {
+          event.target.checked = false;
+        } else if (!event.target.checked) {
+          event.target.indeterminate = true;
+        }
+
+        this.$dispatch("sl-change");
+      }
+    }))
+
     Alpine.data("sourceList", () => ({
       LoadingStatus,
+      NsfwOption,
 
       simpleLanguageName,
       languageName,
@@ -84,7 +111,7 @@
        */
       selectedLanguages: [],
 
-      nsfw: true,
+      nsfw: NsfwOption.All,
 
       async init() {
         try {
@@ -133,7 +160,12 @@
                 item.id.toLowerCase().includes(this.query.toLowerCase())
               : true
           )
-          .filter((item) => (this.nsfw ? true : (item.nsfw ?? 0) <= 1))
+          .filter((item) => 
+            this.nsfw === NsfwOption.All 
+              ? true 
+              : this.nsfw === NsfwOption.Nsfw
+              ? item.nsfw > 1
+              : item.nsfw < 2)
           .filter((item) =>
             this.selectedLanguages.length
               ? this.selectedLanguages.includes(item.lang)

@@ -72,13 +72,20 @@
       <template x-if="loading === LoadingStatus.Loaded">
         <div>
           <div class="source-search" x-effect="updateFilteredList">
-            <sl-checkbox
-              class="source-search__content-rating"
-              @sl-change="nsfw = event.target.checked"
-              :checked="nsfw"
-            >
-              Show NSFW sources
-            </sl-checkbox>
+            <div class="source-search__nsfw-wrapper">
+              <span class="source-search__nsfw-label">Show NSFW sources</span>
+              <sl-radio-group 
+                size="small"
+                name="nsfw"
+                value="all"
+                @sl-change="nsfw = $event.target.value"
+              >
+                <sl-radio-button value="nsfw">Yes</sl-radio-button>
+                <sl-radio-button value="safe">No</sl-radio-button>
+                <sl-radio-button value="all">Don't care</sl-radio-button>
+              </sl-radio-group>
+            </div>
+            
             <sl-input
               class="source-search__title"
               placeholder="Search by name or ID..."
