@@ -23,10 +23,12 @@ for (const stylesheet of doc.querySelectorAll("link[rel=stylesheet]")) {
         continue;
     }
 
-    let css = Deno.readTextFileSync(source);
+    let css = "";
     if (existsSync(source.replace(".css", ".scss"))) {
-        const compiler = sass(css);
+        const compiler = sass(Deno.readTextFileSync(source.replace(".css", ".scss")));
         css = compiler.to_string("compressed");
+    } else {
+        css = Deno.readTextFileSync(source);
     }
 
     const styleElement = doc.createElement("style");
