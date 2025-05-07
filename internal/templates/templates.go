@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"embed"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,7 +10,6 @@ import (
 	"unicode"
 
 	"github.com/Aidoku/aidoku-cli/internal/common"
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/fatih/color"
 	"github.com/iancoleman/strcase"
 	"golang.org/x/text/runes"
@@ -23,12 +23,17 @@ type Source struct {
 }
 
 var (
-	box = rice.MustFindBox("resources")
+	//go:embed all:resources/*
+	resources embed.FS
 )
 
-func templateFactory(box *rice.Box, path string) func() []byte {
+func templateFactory(box embed.FS, path string) func() []byte {
 	return func() []byte {
-		return box.MustBytes(path)
+		if bytes, err := box.ReadFile("resources/" + path); err != nil {
+			panic(err)
+		} else {
+			return bytes
+		}
 	}
 }
 
@@ -116,9 +121,9 @@ func GenerateCommon(output string, source Source) error {
 	}
 
 	files := map[string]func() []byte{
-		"/res/source.json":   templateFactory(box, "common/res/source.json.tmpl"),
-		"/res/filters.json":  templateFactory(box, "common/res/filters.json.tmpl"),
-		"/res/settings.json": templateFactory(box, "common/res/settings.json.tmpl"),
+		"/res/source.json":   templateFactory(resources, "common/res/source.json.tmpl"),
+		"/res/filters.json":  templateFactory(resources, "common/res/filters.json.tmpl"),
+		"/res/settings.json": templateFactory(resources, "common/res/settings.json.tmpl"),
 	}
 	return GenerateFilesFromMap(output, source, files)
 }

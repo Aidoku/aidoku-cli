@@ -14,14 +14,14 @@ func RustGenerator(output string, source Source) error {
 	}
 
 	files := map[string]func() []byte{
-		"/src/lib.rs": templateFactory(box, "rust/src/lib.rs.tmpl"),
-		"/Cargo.toml": templateFactory(box, "rust/Cargo.toml.tmpl"),
+		"/src/lib.rs": templateFactory(resources, "rust/src/lib.rs.tmpl"),
+		"/Cargo.toml": templateFactory(resources, "rust/Cargo.toml.tmpl"),
 	}
 	if len(source.TemplateName) == 0 {
 		os.MkdirAll(output+"/.cargo", os.FileMode(0754))
-		files["/.cargo/config"] = templateFactory(box, "rust/.cargo/config.tmpl")
-		files["/build.sh"] = templateFactory(box, "rust/build.sh.tmpl")
-		files["/build.ps1"] = templateFactory(box, "rust/build.ps1.tmpl")
+		files["/.cargo/config"] = templateFactory(resources, "rust/.cargo/config.tmpl")
+		files["/build.sh"] = templateFactory(resources, "rust/build.sh.tmpl")
+		files["/build.ps1"] = templateFactory(resources, "rust/build.ps1.tmpl")
 	}
 	// Make the build script executable
 	err = GenerateFilesFromMap(output, source, files)
