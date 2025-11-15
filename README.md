@@ -1,6 +1,9 @@
 # aidoku-cli
 Aidoku development tools in a single program
 
+> [!WARNING]
+> This program is only for legacy Aidoku source development (pre 0.7). The new aidoku-cli can be found in the [aidoku-rs repo](https://github.com/Aidoku/aidoku-rs/tree/main/crates/cli).
+
 # Installation
 ```sh
 # macOS/Linux
