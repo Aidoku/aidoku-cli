@@ -1,10 +1,9 @@
 module github.com/Aidoku/aidoku-cli
 
-go 1.18
+go 1.23
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.4
-	github.com/GeertJohan/go.rice v1.0.2
 	github.com/bmatcuk/doublestar/v4 v4.0.2
 	github.com/fatih/color v1.13.0
 	github.com/felixge/httpsnoop v1.0.3
@@ -18,7 +17,6 @@ require (
 )
 
 require (
-	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect

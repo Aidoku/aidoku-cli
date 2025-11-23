@@ -2,6 +2,7 @@ package build
 
 import (
 	"archive/zip"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,7 +14,6 @@ import (
 	"sync"
 
 	"github.com/Aidoku/aidoku-cli/internal/common"
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/fatih/color"
 	"github.com/segmentio/fasthash/fnv1a"
 	"github.com/valyala/fastjson"
@@ -66,12 +66,12 @@ func BuildWrapper(zipPatterns []string, output string, web bool, webArgs WebTemp
 	return nil
 }
 
+//go:embed web/index.html.tmpl
+var index string
+
 func BuildWeb(args WebTemplateArguments, output string) error {
-	box := rice.MustFindBox("web")
 
-	bytes := box.MustBytes("index.html.tmpl")
-
-	tmpl, err := template.New("index").Parse(string(bytes))
+	tmpl, err := template.New("index").Parse(index)
 	if err != nil {
 		return err
 	}

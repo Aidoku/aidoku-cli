@@ -19,13 +19,13 @@ func RustTemplateGenerator(output string, source Source) error {
 	os.RemoveAll(output + "/res")
 
 	files := map[string]func() []byte{
-		"/Cargo.toml":               templateFactory(box, "rust-template/Cargo.toml.tmpl"),
-		"/build.sh":                 templateFactory(box, "rust-template/build.sh.tmpl"),
-		"/build.ps1":                templateFactory(box, "rust-template/build.ps1.tmpl"),
-		"/.cargo/config":            templateFactory(box, "rust/.cargo/config.tmpl"),
-		"/template/Cargo.toml":      templateFactory(box, "rust-template/template/Cargo.toml.tmpl"),
-		"/template/src/lib.rs":      templateFactory(box, "rust-template/template/src/lib.rs.tmpl"),
-		"/template/src/template.rs": templateFactory(box, "rust-template/template/src/template.rs.tmpl"),
+		"/Cargo.toml":               templateFactory(resources, "rust-template/Cargo.toml.tmpl"),
+		"/build.sh":                 templateFactory(resources, "rust-template/build.sh.tmpl"),
+		"/build.ps1":                templateFactory(resources, "rust-template/build.ps1.tmpl"),
+		"/.cargo/config":            templateFactory(resources, "rust/.cargo/config.tmpl"),
+		"/template/Cargo.toml":      templateFactory(resources, "rust-template/template/Cargo.toml.tmpl"),
+		"/template/src/lib.rs":      templateFactory(resources, "rust-template/template/src/lib.rs.tmpl"),
+		"/template/src/template.rs": templateFactory(resources, "rust-template/template/src/template.rs.tmpl"),
 	}
 	// Make the build script executable
 	err = GenerateFilesFromMap(output, source, files)

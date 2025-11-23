@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"archive/zip"
+	_ "embed"
 	"errors"
 	"fmt"
 	"image"
@@ -10,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/Aidoku/aidoku-cli/internal/common"
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
@@ -59,6 +59,15 @@ func opaque(im image.Image) bool {
 	return true
 }
 
+//go:embed resources/schemas/filters.schema.json
+var filters string
+
+//go:embed resources/schemas/source.schema.json
+var source string
+
+//go:embed resources/schemas/settings.schema.json
+var settings string
+
 var verifyCmd = &cobra.Command{
 	Use:           "verify <FILES>",
 	Short:         "Test Aidyesu packages if they're ready for publishing",
@@ -73,10 +82,9 @@ var verifyCmd = &cobra.Command{
 
 		zipFiles := common.ProcessGlobs(args)
 
-		box := rice.MustFindBox("resources")
-		filterSchema := gojsonschema.NewStringLoader(box.MustString("schemas/filters.schema.json"))
-		sourceSchema := gojsonschema.NewStringLoader(box.MustString("schemas/source.schema.json"))
-		settingsSchema := gojsonschema.NewStringLoader(box.MustString("schemas/settings.schema.json"))
+		filterSchema := gojsonschema.NewStringLoader(filters)
+		sourceSchema := gojsonschema.NewStringLoader(source)
+		settingsSchema := gojsonschema.NewStringLoader(settings)
 
 		errored := false
 
